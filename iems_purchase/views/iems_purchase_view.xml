@@ -1,0 +1,37 @@
+<odoo>
+    <data>
+        <record id="pst_purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header/button[@name='button_unlock']" position="after">
+                    <button string="Confirm L2" type="object" name="button_confirm_l2" class="btn-primary"
+                            icon="fa-check" groups="iems_purchase.group_purchase_l2" states='to approve'/>
+                </xpath>
+                <xpath expr="//header/button[@name='button_approve']" position="replace">
+                    <button name="button_approve" type="object" states='l2' string="Approve Order"
+                            class="oe_highlight" groups="iems_purchase.group_purchase_l3" data-hotkey="z"/>
+                </xpath>
+                <xpath expr="//header/button[@name='button_confirm']" position="replace">
+                    <button name="button_approve" type="object" states="sent" string="Approve Order"
+                            class="oe_highlight" groups="iems_purchase.group_purchase_l1" data-hotkey="z"/>
+                </xpath>
+                 <xpath expr="//button[@name='button_confirm'][1]" position="attributes">
+
+                    <attribute name="groups">iems_purchase.group_purchase_l1</attribute>
+
+                </xpath>
+
+                 
+            </field>
+        </record>
+    </data>
+
+    <menuitem name="Purchase"
+              id="purchase.menu_purchase_root"
+              groups="purchase.group_purchase_manager,purchase.group_purchase_user,iems_purchase.group_purchase_l2"
+              web_icon="purchase,static/description/icon.svg"
+              sequence="135"/>
+
+</odoo>

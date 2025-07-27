@@ -1,0 +1,61 @@
+
+
+@font-face {
+	font-family: 'DroidArabicKufiBold';
+	src: url('/custom_pos_receipt/static/src/fonts/DroidKufi-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+	  }
+
+@font-face {
+	font-family: 'DroidArabicKufiRegular';
+	src: url('/custom_pos_receipt/static/src/fonts/DroidKufi-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.pos .pos-receipt-container > div{
+	text-align: left;
+    width: 260px;
+    background-color: white;
+    margin: 5px;
+    padding: 5px;
+    font-size: 8px;
+    padding-bottom: 10px;
+    display: inline-block;
+    border: solid 1px rgb(220,220,220);
+    border-radius: 3px;
+    overflow: auto;
+}
+
+@media print {
+    body {
+        background: white;
+    }
+    body * {
+        visibility: hidden;
+    }
+    .pos, .pos * {
+        position: static !important;
+    }
+    .pos .receipt-screen .pos-receipt-container {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+    }
+    .pos .receipt-screen .pos-receipt-container, .pos .receipt-screen .pos-receipt-container  * {
+        visibility: visible;
+        background: white !important;
+        color: black !important;
+    }
+    .pos .pos-receipt {
+        margin: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        border: none !important;
+        font-size: 6px !important;
+        width: 260px !important;
+	height:100%;
+    	position:absolute;
+    }
+}

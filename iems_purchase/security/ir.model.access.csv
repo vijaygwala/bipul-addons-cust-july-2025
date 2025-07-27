@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_order,purchase.order,model_purchase_order,group_purchase_l2,1,1,1,1
+access_purchase_order_line,purchase.order.line l2,model_purchase_order_line,group_purchase_l2,1,1,1,1
+access_account_tax_purchase_l2,account.tax,account.model_account_tax,group_purchase_l2,1,0,0,0
+access_account_tag_purchase_l2,account.account.tag,account.model_account_account_tag,group_purchase_l2,1,0,0,0
+access_product_product_purchase_l2,product.product.purchase.user,product.model_product_product,group_purchase_l2,1,0,0,0
+access_product_template_purchase_l2,product.template purchase_l2,product.model_product_template,group_purchase_l2,1,0,0,0
+access_account_fiscal_position_purchase_l2,account.fiscal.position purchase,account.model_account_fiscal_position,group_purchase_l2,1,0,0,0
+access_res_partner_purchase_l2,res.partner purchase,base.model_res_partner,group_purchase_l2,1,0,0,0
+access_account_journal,account.journal,account.model_account_journal,group_purchase_l2,1,0,0,0
+access_account_move,account.move,account.model_account_move,group_purchase_l2,1,1,1,1
+access_account_move_line,account.move.line,account.model_account_move_line,group_purchase_l2,1,1,1,0
+access_account_analytic_line,account.analytic.line,account.model_account_analytic_line,group_purchase_l2,1,0,0,0
+account_partial_reconcile,account.partial.reconcile.purchase.user,account.model_account_partial_reconcile,group_purchase_l2,1,0,0,0
+access_purchase_bill_union,access_purchase_bill_union,model_purchase_bill_union,iems_purchase.group_purchase_l2,1,0,0,0
+access_report_purchase_order_l2,purchase.stock.report l2,model_purchase_report,iems_purchase.group_purchase_l2,1,0,0,0

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+   <!-- tranship report wizard action -->
+ <record id="action_open_pending_rfq_wizard" model="ir.actions.act_window">
+        <field name="name">Pending RFQ Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pending.rfq.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_pending_rfq_report" />
+        <field name="target">new</field>
+    </record>
+
+<!-- menu item for tranship report -->
+    <menuitem id="menu_pending_rfq_report" name="Pending RFQ's Approval Report" parent="purchase.purchase_report_main" sequence="101" action="action_open_pending_rfq_wizard"/>
+</odoo>
