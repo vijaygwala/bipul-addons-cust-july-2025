@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="A4_landscape_report_paperformat" model="report.paperformat">
+            <field name="name">A4 Paper Format (Landscape)</field>
+            <field name="format">A4</field>
+            <field name="orientation">Landscape</field>
+
+            <field name="margin_top">30</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+
+            <field name="header_spacing">30</field>
+            <field name="dpi">90</field>
+        </record>
+        <record id="action_report_open_po" model="ir.actions.report">
+            <field name="name">Open PO Report</field>
+            <field name="model">purchase.order</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">ak_open_po_report.report_open_po</field>
+            <field name="report_file">ak_open_po_report.report_open_po</field>
+            <field name="binding_model_id" eval="False"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="ak_open_po_report.A4_landscape_report_paperformat" />
+        </record>
+
+    </data>
+</odoo>

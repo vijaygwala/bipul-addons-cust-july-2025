@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+
+  <template id="payment_cycle_report">
+    <t t-call="web.html_container">
+
+      <t t-call="web.external_layout">
+        <div class="page">
+
+          <table class="my-0 table table-sm table-borderless">
+            <thead>
+              <tr>
+
+
+
+                <th class="small text-left h5" width="15%" scope="col">
+                  <strong>Start Date :</strong>
+                  <span t-esc="datas['from_date']"/>
+
+
+                </th>
+                <th class="small text-center h5" scope="col" width="70%"> <b> Payment Cycle Report -  <span t-esc="datas['PC']"/> </b></th>
+                <th class="small text-right h5" scope="col" width="15%">
+                  <strong>End Date :</strong>
+                  <span t-esc="datas['to_date']"/>
+                </th>
+
+
+              </tr>
+            </thead>
+            <tbody>
+
+
+            </tbody>
+          </table>
+
+
+
+          <table class="my-0 table table-sm table-borderless">
+            <thead>
+              <tr>
+
+
+                <th class="small" scope="col">Payment Ref</th>
+                <th class="small" scope="col">Payment Date</th>
+                <th class="small" scope="col">Company Name</th>
+                <th class="small" scope="col">LPO No.</th>
+                <th class="small" scope="col">LPO Date </th>
+                <th class="small" scope="col">Vendor Code</th>
+                <th class="small" scope="col">Vendor Name </th>
+                <th class="small" scope="col">Invoice Number </th>
+                <th class="small" scope="col">Amount (FC) </th>
+                <th class="small" scope="col">Currency </th>
+                <th class="small" scope="col">Amount (LC)</th>
+                <th class="small" scope="col">Vendor Bank Name </th>
+                <th class="small" scope="col">Branch Name </th>
+                <th class="small" scope="col">IBAN </th>
+                <th class="small" scope="col">Account Number </th>
+                <th class="small" scope="col">Status </th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="docs" t-as ="pmt">
+                <t t-set="po_data" t-value ="pmt.get_purchase_orders" />
+                <tr>
+
+                  <td class="small text-center">
+                    <t t-esc="pmt.name" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.date" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.company_id.name" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="po_data['po_name']" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="po_data['po_dates']" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="po_data['po_ref']" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.partner_id.name" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.ref" />
+                  </td>
+                  <td class="small text-center">
+
+                    <span t-esc="pmt.amount" t-options='{"widget": "monetary", "display_currency": pmt.currency_id}' />
+                    <!-- <t t-esc="pmt.currency_id.name" /> -->
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.currency_id.name" />
+                  </td>
+
+                  <td class="small text-center">
+                    <span t-esc="pmt.get_amount_in_lc" t-options='{"widget": "monetary", "display_currency": pmt.currency_id}' />
+                    <!-- <t t-esc="pmt.company_id.currency_id.name" /> -->
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.partner_bank_id.bank_name" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.partner_bank_id.bank_id.street" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.partner_bank_id.acc_number" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.partner_bank_id.iban_custom" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="pmt.state" />
+                  </td>
+
+                </tr>
+              </t>
+            </tbody>
+          </table>
+          <br/>
+
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+
+          <table class="table table-sm table-borderless">
+            <tr>
+              <td class="text-center" style="line-height: 1.6;" width="25%">
+                <strong>Signature</strong>
+                <br/>
+                <br/>
+                <br/>
+
+
+              </td>
+              <td width="50%">
+              </td>
+              <td class = "text-center" width="25%">
+                <strong>Date</strong>
+                <br/>
+                <br/>
+                <br/>
+
+              </td>
+            </tr>
+          </table>
+        </div>
+      </t>
+
+    </t>
+  </template>
+
+
+  <record id="A3_landscape_report_paperformat" model="report.paperformat">
+    <field name="name">A3 Paper Format (Landscape)</field>
+    <field name="format">A3</field>
+    <field name="orientation">Landscape</field>
+
+    <field name="margin_top">26</field>
+    <field name="margin_bottom">10</field>
+    <field name="margin_left">5</field>
+    <field name="margin_right">5</field>
+
+    <field name="header_spacing">22</field>
+    <field name="dpi">90</field>
+  </record>
+  <!-- report action -->
+  <record id="payment_cycle_report_action" model="ir.actions.report">
+    <field name="name">Payment cycle Report</field>
+    <field name="model">payment.cycle.report.wizard</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">payment_cycle_report.payment_cycle_report</field>
+    <field name="report_file">payment_cycle_report.payment_cycle_report</field>
+    <field name="print_report_name">'Payment Cycle Report'</field>
+    <field name="paperformat_id" ref="payment_cycle_report.A3_landscape_report_paperformat" />
+  </record>
+</odoo>

@@ -1,0 +1,250 @@
+<odoo>
+    <data>
+<template id="custom_purchase_header_footer"  inherit_id="web.external_layout_standard">
+<xpath expr="//div[1]" position="replace">
+
+ <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+            <div class="o_boxed_header">
+            <div class="row mb8">
+                <div class="col-4">
+                    <img t-if="company.logo" class="img-fluid" style="max-height: 170px;max-width: 360px;" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+                </div>
+                <div class="col-8 text-end mb4">
+                    <div class="mt0" t-field="company.report_header"/>
+                    <div name="company_address" class="float-end mb4">
+                       <ul class="list-unstyled">
+                           
+                          <li><t t-esc="company.company_details"/></li>  
+                        
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+  
+</xpath>
+<xpath expr="//div[hasclass('text-center')]" position="before">
+<t t-if="c_name">
+  <div>
+  <span> This is system generated electronic Purchase order</span>
+  </div>
+   
+  </t>
+</xpath>
+ </template>
+
+
+
+  <template id="report_purchaseorder_document_inherit" inherit_id="purchase.report_purchaseorder_document">
+
+    <xpath expr="//t[@t-set='address']" position="replace">
+    <t t-set="address">
+            <h5 t-field="o.partner_id.name" style="font-weight: bolder !important;" />
+       
+            <div t-field="o.partner_id" id="address_child" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;phone&quot;, &quot;vat&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+    </t>
+  </xpath>
+<xpath expr="//div[@id='total']" position="replace">
+
+<div id="total" class="row justify-content-end">
+                <div class="col-4">
+                    <table class="table table-sm table-borderless">
+                        <t t-set="tax_totals" t-value="o.tax_totals"/>
+                        <t t-set="c_name" t-value="o.currency_id.name"/>
+                        <t t-set="currency_obj" t-value="o.currency_id"/>
+                        <t t-call="account.document_tax_totals"/>
+                    </table>
+                </div>
+</div>
+ </xpath>
+   
+    <xpath expr="//t[@t-set='information_block']" position="replace">
+             <t t-set="information_block">
+                <strong>Shipping address:</strong>
+                <div t-if="o.dest_address_id">
+                <h5 t-field="o.dest_address_id.name" style="font-weight: bolder !important;" />
+                    <div t-field="o.dest_address_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}" name="purchase_shipping_address"/>
+                </div>
+
+            </t>
+    </xpath>
+        <xpath expr="//table[hasclass('table')]" position="replace">
+           <table class="table table-sm o_main_table mt-4">
+                <thead style="display: table-row-group">
+                    <tr>
+                        <th name="th_description"><strong>Description</strong></th>
+                        <th name="th_taxes"><strong>Taxes</strong></th>
+                        <th name="th_date_req" class="text-center"><strong>Date Req.</strong></th>
+                        <th name="th_quantity" class="text-end"><strong>Qty</strong></th>
+                        <th name="th_price_unit" class="text-end"><strong>Unit Price</strong></th>
+                        <th name="th_amount" class="text-end"><strong>Amount</strong></th>
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="current_subtotal" t-value="0"/>
+                    <t t-foreach="o.order_line" t-as="line">
+                        <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                        <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+
+                        <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''">
+                            <t t-if="not line.display_type">
+                                <td id="product">
+                                    <span t-field="line.name"/>
+                                </td>
+                                <td name="td_taxes">
+                                    <span t-esc="', '.join(map(lambda x: x.description or x.name, line.taxes_id))"/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="line.date_planned"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.product_qty"/>
+                                    <span t-field="line.product_uom.name" groups="uom.group_uom"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.price_unit"/>
+                                </td>
+                                <td class="text-end">
+                                    <span t-field="line.price_subtotal" t-options="{&quot;widget&quot;: &quot;False&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                 <span t-field="line.currency_id.name"/>
+                                </td>
+                                
+                            </t>
+                            <t t-if="line.display_type == 'line_section'">
+                                <td colspan="99" id="section">
+                                    <span t-field="line.name"/>
+                                </td>
+                                <t t-set="current_section" t-value="line"/>
+                                <t t-set="current_subtotal" t-value="0"/>
+                            </t>
+                            <t t-if="line.display_type == 'line_note'">
+                                <td colspan="99" id="note">
+                                    <span t-field="line.name"/>
+                                </td>
+                            </t>
+                        </tr>
+                        <t t-if="current_section and (line_last or o.order_line[line_index+1].display_type == 'line_section')">
+                            <tr class="is-subtotal text-end">
+                                <td colspan="99" id="subtotal">
+                                    <strong class="mr16">Subtotal</strong>
+                                    <span t-esc="current_subtotal" t-options="{&quot;widget&quot;: &quot;False&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                    <span t-field="o.currency_id.name"/>
+                                </td>
+                                
+                            </tr>
+                        </t>
+                    </t>
+                </tbody>
+            </table>
+           
+             </xpath>
+
+            
+                 
+
+          
+
+    </template>
+
+<template id="document_tax_inherited" inherit_id="account.document_tax_totals">
+<xpath expr="//tr[hasclass('o_subtotal')]" position="replace">
+ <tr class="border-black o_subtotal">
+                    <td><strong t-esc="subtotal['name']"/></td>
+
+                    <td class="text-end">
+                     <t t-if="c_name">
+                        <span t-att-class="oe_subtotal_footer_separator" t-esc="'{:.2f}'.format(subtotal['amount'])" />
+                         <span t-esc="c_name"/>
+                         </t>
+                      <t t-else="">
+                      <span t-att-class="oe_subtotal_footer_separator" t-esc="subtotal['formatted_amount']" />
+                      </t>
+                        
+                    </td>
+</tr>
+
+</xpath>
+
+<xpath expr="//tr[hasclass('o_total')]" position="replace">
+ <tr class="o_total">
+                <t t-if="has_rounding"><td>Total</td></t>
+                <t t-else=""><td><strong>Total</strong></td></t>
+                <td class="text-end">
+                 <t t-if="c_name">
+                    <span t-esc="'{:.2f}'.format(tax_totals['amount_total'])"  />
+                    <span t-esc="c_name"/>
+                </t>
+                 <t t-else="">
+                  <span t-esc="tax_totals['formatted_amount_total']"  />
+                 </t>
+                    
+                </td>
+</tr>
+<t t-if="c_name">
+ <tr class="o_words">
+               <td><strong>Amount in Words</strong></td>
+              
+                <td class="text-end">
+                 
+                    <span t-esc="currency_obj.amount_to_text(tax_totals['amount_total'])"  />
+                    
+               
+               
+                    
+                </td>
+</tr>
+ </t>
+
+</xpath>
+
+
+
+  
+</template>
+
+
+<template id="tax_groups_total_inherited" inherit_id="account.tax_groups_totals">
+<xpath expr="//tr" position="replace">
+            <tr>
+                    <t t-if="tax_totals['display_tax_base']">
+                        <td>
+                            <span t-esc="amount_by_group['tax_group_name']"/>
+                            <span class="text-nowrap"> on
+                                <t t-esc="amount_by_group['formatted_tax_group_base_amount']"/>
+                            </span>
+                            
+                        </td>
+                        <td class="text-end o_price_total">
+                        <t t-if="c_name">
+                            <span class="text-nowrap" t-esc="amount_by_group['tax_group_amount']"/>
+                             <span t-esc="c_name"/>
+                          </t>   
+                           <t t-else="">
+                           <span class="text-nowrap" t-esc="amount_by_group['formatted_tax_group_amount']"/>
+                            </t>   
+                        </td>
+                    </t>
+                    <t t-else="">
+                        <td><span class="text-nowrap" t-esc="amount_by_group['tax_group_name']"/>
+
+                        </td>
+                        <td class="text-end o_price_total">
+                          <t t-if="c_name">
+                            <span class="text-nowrap" t-esc="'{:.2f}'.format(amount_by_group['tax_group_amount'])"/>
+                             <span t-esc="c_name"/>
+                           </t>  
+                            <t t-else="">
+                            <span class="text-nowrap" t-esc="amount_by_group['formatted_tax_group_amount']"/>
+                            </t> 
+                        </td>
+                    </t>
+                </tr>
+
+</xpath>
+</template>
+
+</data>
+</odoo>
+

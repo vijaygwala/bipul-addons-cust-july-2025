@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="custom-templates" xml:space="preserve">
+ <t t-name="CreateMembership" owl="1">
+        <div class="control-button"  t-if="env and env.pos and env.pos.visible_membership_btn">
+            <i class="fa fa-superpowers" role="img" aria-label="Create Membership" title="Create Membership"/>Create Membership
+        </div>
+
+    </t>
+
+    <t t-name="VerifyMembership"  owl="1">
+        <div class="control-button"  t-if="env and env.pos and env.pos.visible_membership_btn" >
+            <i class="fa fa-superpowers" role="img" aria-label="Check Membership" title="Check Membership"/>Check Membership
+        </div>
+
+    </t>
+</templates>

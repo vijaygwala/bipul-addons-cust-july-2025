@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+ 
+  <template id="pending_rfq_report">
+    <t t-call="web.html_container">
+
+      <t t-call="web.external_layout">
+        <div class="page">
+<table class="my-0 table table-sm table-borderless">
+            <thead>
+              <tr>
+
+
+
+                <th class="small text-left h5" width="15%" scope="col">
+                  <strong>Start Date :</strong>
+                  <span t-esc="datas['from_date']"/>
+
+
+                </th>
+                <th class="small text-center h5" scope="col" width="70%"> <b> Status :  <span t-esc="datas['state']"/> </b></th>
+                <th class="small text-right h5" scope="col" width="15%">
+                  <strong>End Date :</strong>
+                  <span t-esc="datas['to_date']"/>
+                </th>
+
+
+              </tr>
+            </thead>
+            <tbody>
+
+
+            </tbody>
+          </table>
+
+<table class="table table-sm table-borderless" style="border: 1px solid black;">
+    <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">To Send</th>
+      <th scope="col">Waiting</th>
+      <th scope="col">Late</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="table-primary">
+      <th scope="row" class="text-center">All RFQ's</th>
+      <td class="text-center"> <t t-esc="db_data['all_to_send']" /> </td>
+      <td class="text-center"><t t-esc="db_data['all_waiting']" />  </td>
+      <td class="text-center"><t t-esc="db_data['all_late']" /> </td>
+    </tr>
+    <tr class="table-primary">
+      <th scope="row" class="text-center">MY RFQ's</th>
+      <td class="text-center"><t t-esc="db_data['my_to_send']" /></td>
+      <td class="text-center"><t t-esc="db_data['my_waiting']" /></td>
+      <td class="text-center"><t t-esc="db_data['my_late']" /></td>
+    </tr>
+   
+  </tbody>
+</table>
+
+<table class="table table-sm table-borderless" style="border: 1px solid black;">
+  
+  <tbody>
+    <tr class="table-primary">
+      <th scope="row" class="text-center">Avg Order Value</th>
+      <td class="text-center"> <t t-esc="db_data['all_avg_order_value']" /></td>
+     <th scope="row" class="text-center">Purchased Last 7 Days</th>
+      <td class="text-center"><t t-esc="db_data['all_total_last_7_days']" /></td>
+    </tr>
+    <tr class="table-primary">
+      <th scope="row" class="text-center">Lead Time to Purchase</th>
+      <td class="text-center"><t t-esc="db_data['all_avg_days_to_purchase']" /></td>
+       <th scope="row" class="text-center">RFQs Sent Last 7 Days</th>
+      <td class="text-center"><t t-esc="db_data['all_sent_rfqs']" /></td>
+    </tr>
+   
+  </tbody>
+</table>
+
+
+          <table class="my-0 table table-sm table-borderless">
+            <thead>
+              <tr>
+
+
+
+                <th class="small" scope="col">RFQ Ref No.</th>
+                <th class="small" scope="col">Vendor Code</th>
+                <th class="small" scope="col">Vendor Name</th>
+                <th class="small" scope="col">Amount (FC) </th>
+                <th class="small" scope="col">PO Currency</th>
+                <th class="small" scope="col">Amount (Company Currency) </th>
+                <th class="small" scope="col">status</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="docs" t-as ="order">
+                <tr>
+
+
+                  <td class="small text-center">
+                    <t t-esc="order.name" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="order.partner_ref" />
+                  </td>
+                  <td class="small text-center">
+                    <t t-esc="order.partner_id.name" />
+                  </td>
+                  <td class="small text-center">
+                  <span t-esc="order.amount_total" t-options='{"widget": "monetary", "display_currency": order.currency_id}' />
+                    <!-- <t t-esc="'{0:,.2f}'.format(order.amount_total)" /> <t t-esc="order.currency_id.name" /> -->
+                  </td>
+                  <td class="small text-center">
+                   <t t-esc="order.currency_id.name" />
+                  </td>
+                  <td class="small text-center">
+                  <span t-esc="order.get_total_company_currency" t-options='{"widget": "monetary", "display_currency": order.company_id.currency_id}' />
+                    <!-- <t t-esc="'{0:,.2f}'.format(order.get_total_company_currency)" /> <t t-esc="order.company_id.currency_id.name" /> -->
+                  </td>
+                 <td class="small text-center">
+                   <t t-esc="order.state" />
+                  </td>
+
+                </tr>
+              </t>
+            </tbody>
+          </table>
+
+        </div>
+      </t>
+
+    </t>
+  </template>
+
+
+
+ <!-- report action -->
+  <record id="pending_rfq_report_action" model="ir.actions.report">
+    <field name="name">Pending RFQ's Report</field>
+    <field name="model">pending.rfq.report.wizard</field>
+  <field name="report_type">qweb-pdf</field>
+    <field name="report_name">pending_rfq_report.pending_rfq_report</field>
+    <field name="report_file">pending_rfq_report.pending_rfq_report</field>
+    <field name="print_report_name">'Pending RFQ Report'</field>
+  
+  </record>
+</odoo>

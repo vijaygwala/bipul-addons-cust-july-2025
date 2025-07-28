@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--records for creating membership types for customers-->
+    <record id="customer_membership_action" model="ir.actions.act_window">
+        <field name="name">Membership</field>
+        <field name="res_model">membership.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Generate Membership Types
+            </p>
+        </field>
+    </record>
+    <!--Tree view for customers membership-->
+    <record id="customer_membership_view_tree" model="ir.ui.view">
+        <field name="name">membership.type.view.tree</field>
+        <field name="model">membership.type</field>
+        <field name="arch" type="xml">
+            <tree string="Membership">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <!--form view for customers membership-->
+    <record id="customer_membership_view_form" model="ir.ui.view">
+        <field name="name">membership.type.view.form</field>
+        <field name="model">membership.type</field>
+        <field name="arch" type="xml">
+            <form string="Memberships">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="level_sequence"/>
+                    </group>
+                    <group>
+                        <field name="default_period"/>
+                        <field name="purchase_amount"/>
+                    </group>
+                    <group>
+                        <field name="membership_benifit_id"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'open_attachments': True}"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+    <!--Tree view for customers membership Benifits-->
+    <record id="customer_membership_benifits_view_tree" model="ir.ui.view">
+        <field name="name">membership.benifits.view.tree</field>
+        <field name="model">membership.benifits</field>
+        <field name="arch" type="xml">
+            <tree string="Discount and Gifts">
+
+                <field name="discount"/>
+               
+                <field name="gift_association_ids" />
+            
+                <field name="is_discount_applied_on_event_month_only"/>
+
+
+            </tree>
+        </field>
+    </record>
+
+    <!--Form view for customers membership Benifits-->
+    <record id="customer_membership_benifits_view_form" model="ir.ui.view">
+        <field name="name">membership.benifits.view.form</field>
+        <field name="model">membership.benifits</field>
+        <field name="arch" type="xml">
+            <form string="Discount and Gifts">
+                <group >
+                    <field name="discount"/>
+                    
+                    <field name="gift_association_ids" />
+                    
+                    <field name="is_discount_applied_on_event_month_only"/>
+
+                </group>
+
+            </form>
+        </field>
+    </record>
+
+    <!--Tree view for gift.info -->
+    <record id="gift_info_view_tree" model="ir.ui.view">
+        <field name="name">gift.info.view.tree</field>
+        <field name="model">gift.info</field>
+        <field name="arch" type="xml">
+            <tree string="Gifts">
+
+                <field name="product_id" />
+
+                <field name="qty" />
+
+
+
+            </tree>
+        </field>
+    </record>
+
+    <!--Form view for gifts info-->
+    <record id="gifts_info_view_form" model="ir.ui.view">
+        <field name="name">gift.info.view.form</field>
+        <field name="model">gift.info</field>
+        <field name="arch" type="xml">
+            <form string="Gifts">
+                <group >
+
+                    <field name="product_id" />
+
+                    <field name="qty" />
+
+                </group>
+
+            </form>
+        </field>
+    </record>
+
+    <!--Tree view for membership.association.applied.times -->
+    <record id="msap_tree" model="ir.ui.view">
+        <field name="name">membership.association.applied.times.tree</field>
+        <field name="model">membership.association.applied.times</field>
+        <field name="arch" type="xml">
+            <tree string="Applied Times">
+
+                <field name="association_id" readonly="1"/>
+
+                <field name="applied_times" readonly="1" />
+
+
+
+            </tree>
+        </field>
+    </record>
+
+    <!--Form view for membership.association.applied.times-->
+    <record id="msap_form" model="ir.ui.view">
+        <field name="name">membership.association.applied.times.form</field>
+        <field name="model">membership.association.applied.times</field>
+        <field name="arch" type="xml">
+            <form string="Applied Times">
+                <group >
+
+                    <field name="association_id" readonly="1" />
+
+                    <field name="applied_times" readonly="1" />
+                </group>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="view_gift_association_form" model="ir.ui.view">
+        <field name="name">gift.association.form</field>
+        <field name="model">gift.association</field>
+        <field name="arch" type="xml">
+            <form string="Gift Association">
+                <sheet>
+                    <group>
+                     
+                        <field name="name" readonly="1"/>
+                        
+                        <!-- The computed description -->
+                        <field name="gift_ids"/>
+                        <field name="applied_times"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_gift_association_tree" model="ir.ui.view">
+        <field name="name">gift.association.tree</field>
+        <field name="model">gift.association</field>
+        <field name="arch" type="xml">
+            <tree string="Gift Associations">
+                <!-- Display the computed name field in the tree view -->
+                <field name="name" />
+
+                <!-- Display the number of applied times -->
+                <field name="applied_times" />
+
+               
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_res_partner_filter_member" model="ir.ui.view">
+    <field name="name">res.partner.member.filter</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_res_partner_filter"/>
+    <field name="arch" type="xml">
+
+        <!-- Add 'Member' filter after the 'customer' filter -->
+        <xpath expr="//filter[@name='customer']" position="after">
+            <filter name="member_pos" string="Member" domain="[('is_member_pos', '=', True)]"/>
+
+              <!-- <group expand="0" string="Membership Type"
+                   name="group_by_membership_type"
+                   context="{'group_by': 'membership_type'}"/> -->
+      
+        </xpath>
+
+         <xpath expr="//group[@name='group_by']" position="inside">
+            <filter name="group_membership" string="Membership Type" context="{'group_by': 'membership_type'}"/>
+            <filter name="group_gender" string="Gender" context="{'group_by': 'gender_m'}"/>
+        </xpath>
+
+  
+          
+
+    </field>
+</record>
+
+
+    <menuitem id="pos_membership_menu_membership_type" name="Memberships and Programs" parent="pos_membership_menu_root" action="pos_membership_custom.customer_membership_action" sequence="5"/>
+
+</odoo>

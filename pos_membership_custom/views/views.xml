@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--Creating records for the customer membership cards-->
+    <record id="membership_card_action" model="ir.actions.act_window">
+        <field name="name">Cards</field>
+        <field name="res_model">membership.card</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Generate Membership Programs
+            </p>
+        </field>
+    </record>
+    <!--Customer membership cards view tree-->
+    <record id="membership_card_view_tree" model="ir.ui.view">
+        <field name="name">membership.card.view.tree</field>
+        <field name="model">membership.card</field>
+        <field name="arch" type="xml">
+            <tree string="Membership Programs">
+                <field name="membership_id"/>
+                <field name="customer_id"/>
+                <field name="expiry_date"/>
+            </tree>
+        </field>
+    </record>
+    <!--Customer membership cards view form-->
+    <record id="membership_card_view_form" model="ir.ui.view">
+        <field name="name">membership.card.view.form</field>
+        <field name="model">membership.card</field>
+        <field name="arch" type="xml">
+            <form string="Membership Cards">
+               
+                <header>
+                    <field name="state" widget="statusbar"/>
+                    <field name="membership_code_button" invisible="1"/>
+                    <button string="Confirm" class="btn-primary oe_highlight" type='object' name="action_membership_confirm" states="draft"/>
+                    <button string="Cancel" class="btn-primary oe_highlight" type='object' name="action_membership_canceled" states="confirm"/>
+                    <button string="Reset to Draft" class="btn-primary oe_highlight" type='object' name="action_membership_reset_draft" states="cancel"/>
+                </header>
+                <sheet>
+                 <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="object" name="action_view_sales" icon="fa-usd">
+                    <field string="Coupon Sales" name="sale_count" widget="statinfo"/>
+                </button>
+                 <button class="oe_stat_button" type="object" name="action_view_total_sales" icon="fa-usd">
+                    <field string="Total Sales" name="total_sale_count" widget="statinfo"/>
+                </button>
+                </div>
+                 
+                    <group>
+                        <group>
+                            <field name="membership_id" attrs="{'readonly': [('state','=','confirm')]}"/>
+                            <field name="special_date"/>
+                            <field name="special_date_type" />
+                        </group>
+                        <group>
+                            <field name="validity"/>
+                            <field name="discount" attrs="{'readonly': [('state','=','confirm')]}"/>
+                            <field name="other_special_date_type"/>
+                        </group>
+                        <group>
+                            <field name="customer_id" attrs="{'readonly': [('state','=','confirm')]}"/>
+                            <field name="issue_date" attrs="{'readonly': [('state','=','confirm')]}"/>
+                            <field name="expiry_date" attrs="{'readonly': [('state','=','confirm')]}"/>
+                        </group>
+                        <group>
+                            <field name="code" attrs="{'readonly': [('state','=','confirm')]}"/>
+                            <button type="object" name="generate_code" string="Generate Code" class="btn-primary" states="draft"/>
+                            <field name="membership_association_applied_times" readonly="1" />
+                             
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'open_attachments': True}"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!--Membership menu -->
+    <menuitem id="pos_membership_menu_root" name="Memberships" parent="point_of_sale.menu_point_root" sequence="3"/>
+    <!--    </menuitem>-->
+
+    <!--Membership card menu -->
+    <menuitem id="pos_membership_menu_membership_card" name="Membership Cards" parent="pos_membership_menu_root" action="pos_membership_custom.membership_card_action" sequence="10"/>
+
+    <record id="pos_config_form_view" model="ir.ui.view">
+        <field name="name">pos.config.form.view</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='title']" position="after">
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="visible_membership_btn"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="visible_membership_btn"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

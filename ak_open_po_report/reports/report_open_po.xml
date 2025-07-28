@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+ <template id="iems_custom_header_footer_layout">
+         <t t-set="company" t-value="docs_partner.env.company"/>
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+        <!-- Custom Header for Spiro Reports -->
+        <div class="header">
+            <div class="text-center" style="border-bottom: 1px solid black;">
+                <div class="row mb-1">
+
+                    <div class="col-3 mb-1">
+                        <img alt="img" t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height:130px;max-width:150px;"/>
+                    </div>
+
+                    <div class="col-5">
+                    </div>
+
+                    <div class="col-4">
+                    <!-- <t t-esc="company.company_details" /> -->
+                                    
+
+                        <ul style="list-style-type:none;margin:0;padding:0;">
+                            <li>
+                                <h5>
+                                    <b><t t-esc="company.name" /></b>
+                                </h5>
+                            </li>
+                            <li>
+                               
+                                    <b>
+                                        <t t-esc="company.street" />
+                                    </b>
+                                
+                            </li>
+                            <li>
+                                <b>
+                                        <t t-esc="company.city" /> ,<t t-esc="company.state_id.code" /> <t t-esc="company.zip" /> ,<t t-esc="company.country_id.code" />
+                                    </b>
+                            </li>
+                              <li>
+                               
+                                    <b>
+                                       Tel : <t t-esc="company.phone" />, TRN : <t t-esc="company.vat" />
+                                    </b>
+                                
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="article o_report_layout_standard">
+            <t t-out="0" />
+        </div>
+        <div class="footer o_standard_footer">
+            <div class="text-center" style="border-top: 1px solid black;">
+                <div class="row">
+                    <div class="col-4 text-left">
+                        <span >
+                            <b>
+                                <t t-esc="company.phone" />  | <b>
+                                <t t-esc="company.email" />
+                            </b>
+                            </b>
+                        </span>
+                        <br/>
+                        
+                       
+                    </div>
+                    <div class="col-4 text-center">
+                        <p>
+                            <b> Page <span class="page"/>
+ of <span class="topage" />
+                        </b>
+                    </p>
+                </div>
+                <div class="col-4 text-right">
+                   
+                            <b> <t t-esc="company.website" /> </b>
+                     
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+    <template id="open_purchase_order_report_template">
+        <div class="page">
+
+
+            <table class="my-0 table table-sm table-borderless">
+                <thead>
+                    <tr>
+
+
+
+                        <th class="small text-left" width="15%" scope="col">
+                            <strong>Start Date :</strong>
+                            <span t-esc="start_date"/>
+                            
+                            
+                        </th>
+                        <th class="small text-center" scope="col" width="70%"> Open Purchase Order Report </th>
+                        <th class="small" scope="col" width="15%">
+                            <strong>End Date :</strong>
+                            <span t-esc="end_date"/>
+                        </th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                  
+
+                </tbody>
+            </table>
+            
+
+
+            <div t-foreach="lines_data" t-as="o">
+                <t t-set="start_date" t-value="''"/>
+                <t t-set="end_date" t-value="''"/>
+                <table class="my-0 table table-sm table-borderless">
+                    <thead>
+                        <tr>
+
+
+
+                            <th class="small text-left" width="15%" scope="col">
+
+                            </th>
+                            <th class="small" scope="col" width="70%"></th>
+                            <th class="small" scope="col" width="15%">
+
+                            </th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-if="lines_data[o].get('categ_partner') == 'partner'">
+                            <td class="small text-left">
+                               <b> <span t-field="o.name"/> </b>
+                            </td>
+                            <td class="small text-center">
+
+                            </td>
+                            <td class="small text-right">
+                               <b> <span t-field="o.phone"/></b>
+                                <br/>
+                               <b> <span t-field="o.email"/> </b>
+                            </td>
+
+                        </tr>
+                        <tr t-if="lines_data[o].get('categ_partner') == 'category'" >
+                            <td class="small text-left" colspan="3">
+                               <b>  <span class="text-left" t-esc="o.complete_name"/> </b>
+                            </td>
+                        </tr>
+                        <tr t-if="lines_data[o].get('categ_partner') == 'product'">
+                            <td class="small text-left" colspan="3">
+                                <b>  <span class="text-left" t-esc="o.name"/> </b>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <!-- <div class="row">
+
+                    <div class="col-md-12">
+                        <t t-if="lines_data[o].get('categ_partner') == 'partner'">
+                            <div style="float:left;">
+                                <span t-field="o.name"/>
+                            </div>
+                            <div style="float:right;">
+                                <span t-field="o.phone"/>
+                                <br/>
+                                <span t-field="o.email"/>
+                            </div>
+                        </t>
+                        <t >
+                          
+                        </t>
+                        <t >
+                          
+                        </t>
+                    </div>
+                </div> -->
+                <!-- <div class="row"> -->
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <td class="text-right">
+                            <b>SR. No</b>
+                        </td>
+
+                        <td class="text-right">
+                            <b>Purchase Order</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Vendor Code</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Name</b>
+                        </td>
+                        <td class="text-left">
+                            <b>Created Date</b>
+                        </td>
+                        <td class="text-left">
+                            <b>Product</b>
+                        </td>
+                        <t t-if="lines_data[o].get('categ_partner') == 'partner'">
+                            <td class="text-left">
+                                <b>Product Category</b>
+                            </td>
+                        </t>
+                        <td class="text-right">
+                            <b>Aging</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Initial Demand</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Initial Demand Value</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Received Qty</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Received Qty Value</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Receipt Status</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Pending Qty</b>
+                        </td>
+                        <td class="text-right">
+                            <b>Pending Qty Value</b>
+                        </td>
+                    </tr>
+                    <t t-set="i" t-value="1"/>
+                    <tr t-foreach="lines_data[o].get('order_line', [])" t-as="move_list">
+                        <td class="text-right">
+                            <span t-esc="i"/>
+                            <t t-set="i" t-value="i+1"/>
+                        </td>
+
+                        <td class="text-right">
+                            <span t-esc="move_list.get('purchase_order')"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-esc="move_list.get('partner_ref')"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-esc="move_list.get('partner_name')"/>
+                        </td>
+                        <td class="text-left">
+                            <span t-esc="move_list.get('create_date')"/>
+                        </td>
+                        <td class="text-left">
+                            <span t-esc="move_list.get('product')"/>
+                        </td>
+                        <t t-if="lines_data[o].get('categ_partner') == 'partner'">
+                            <td class="text-left">
+                                <span t-esc="move_list.get('categ_id')"/>
+                            </td>
+                        </t>
+                        <td class="text-left">
+                                <span t-esc="move_list.get('aging')"/>
+                        </td>
+                        <td class="text-right">
+                            <t t-esc="'{0:,.0f}'.format(move_list.get('product_qty'))"/>
+                        </td>
+                        <td class="text-left">
+                            <span t-esc="move_list.get('prod_qty_subtotal')" t-options='{"widget": "monetary", "display_currency": move_list.get("curr")}'/>
+                        </td>
+                        <td class="text-right">
+                            <t t-esc="'{0:,.0f}'.format(move_list.get('qty_received'))"/>
+                        </td>
+                        <td class="text-left">
+                            <span t-esc="move_list.get('received_subtotal')" t-options='{"widget": "monetary", "display_currency": move_list.get("curr")}'/>
+                        </td>
+                        <td class="text-right">
+                            <t t-esc="move_list.get('receipt_status')"/>
+                        </td>
+                         <td class="text-left">
+                            <span t-esc="move_list.get('pending_qty')"/>
+                        </td>
+                        <td class="text-right">
+                            <span t-esc="move_list.get('pending_qty_value')" t-options='{"widget": "monetary", "display_currency": move_list.get("curr")}'/>
+                        </td>
+                    </tr>
+                </table>
+                <!-- </div> -->
+            </div>
+        </div>
+    </template>
+
+    <template id="report_open_po">
+        <t t-call="web.html_container">
+            <t t-call="ak_open_po_report.iems_custom_header_footer_layout">
+                <t t-call="ak_open_po_report.open_purchase_order_report_template"/>
+            </t>
+        </t>
+    </template>
+</odoo>

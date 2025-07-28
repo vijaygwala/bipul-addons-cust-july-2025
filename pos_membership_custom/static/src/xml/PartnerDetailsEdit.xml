@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ClientDetailsEditIdent" t-inherit="point_of_sale.PartnerDetailsEdit" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[@class='partner-detail'][4]" position="attributes">
+            <attribute name="style">display:none;</attribute>
+
+        </xpath>
+        <xpath expr="//div[@class='partner-detail'][4]" position="after">
+
+            <div class="partner-detail">
+                <span class="label">State</span>
+                <input class="detail" name="custom_state" placeholder="State" t-on-change="captureChange" t-att-value="props.partner.custom_state || ''"/>
+                
+
+            </div>
+
+        </xpath>
+
+
+          <xpath expr="//div[@class='partner-detail'][8]" position="after">
+
+            <div class="partner-detail">
+        
+                <span class="label">Gender</span>
+                <input class="detail" name="gender_m" placeholder="Gender" t-on-change="captureChange" t-att-value="props.partner.gender_m || ''"/>
+
+            </div>
+
+        </xpath>
+    </t>
+</templates>

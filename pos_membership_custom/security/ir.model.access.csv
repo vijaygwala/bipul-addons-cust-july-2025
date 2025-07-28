@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_customer_membership,access.membership.type,model_membership_type,base.group_user,1,1,1,1
+access_membership_card,access.membership.card,model_membership_card,base.group_user,1,1,1,1
+access_membership_benifits,access.membership.benifits,model_membership_benifits,base.group_user,1,1,1,1
+access_gift_info,access.gift.info,model_gift_info,base.group_user,1,1,1,1
+access_gift_association,access.gift.association,model_gift_association,base.group_user,1,1,1,1
+access_mem_ass_appl_times,access.membership.association.applied.times,model_membership_association_applied_times,base.group_user,1,1,1,1

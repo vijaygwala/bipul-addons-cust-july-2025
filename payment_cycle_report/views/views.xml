@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+   <!-- tranship report wizard action -->
+ <record id="action_payment_cycle_wizard" model="ir.actions.act_window">
+        <field name="name">Payment Cycle Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">payment.cycle.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payment_cycle_report" />
+        <field name="target">new</field>
+    </record>
+
+<record id="payment_cycle_seq" model="ir.sequence">
+      <field name="name">Payment Cycles</field>
+      <field name="code">payment.cycle.report.wizard</field>
+      <field name="prefix">PC</field>
+      <field name="padding">5</field>
+      <field name="company_id" eval="False"/>
+</record>
+    <menuitem id="menu_payment_cycle_report" name="Payment Cycle Report" parent="account.account_reports_management_menu" sequence="101" action="action_payment_cycle_wizard"/>
+</odoo>

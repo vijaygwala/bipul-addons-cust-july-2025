@@ -1,0 +1,7 @@
+.membership_long_text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    max-width: 500px; 
+    display: block;
+}

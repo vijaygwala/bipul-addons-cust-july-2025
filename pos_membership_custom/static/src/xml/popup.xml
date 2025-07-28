@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="MembershipPopup" owl="1">
+        <Draggable>
+            <div class="popup popup-textinput container create-membership-popup">
+                <header class="title drag-handle">
+                    Create Membership Card 
+                </header>
+
+                <div class="body">
+                    <div style="text-align:center;" id="invalid-ms">
+                        <span style="color:red;" id="inv-ts"></span>
+                    </div>
+                    <label class="create-popup-label" for="customer_select">Customer</label>
+                    <input type="text" placeholder="Customer" id="customer-mb" t-model="state.customer_name" readonly="1" />
+
+                    <label class="create-popup-label" for="membership_select">Select Membership</label>
+                    <select id="picker" class="classic form-select create-form-picker" aria-label=".form-select-sm" t-on-change="getDropdownValues">
+
+                        <t t-foreach="memberships" t-as="mb" t-key="mb.id">
+                            <option t-att-value="mb.id">
+                                <span t-esc="mb.name" />
+                            </option>
+                        </t>
+                    </select>
+
+                    <label class="create-popup-label" for="special_date_select">Special Date</label>
+                    <input type="date" placeholder="Special Date" id="special_date" t-model="state.special_date" />
+
+                    <label class="create-popup-label" for="special_type_select">Special Date Type</label>
+                    <select id="special_date_type" class="classic form-select create-form-picker" aria-label=".form-select-sm" t-on-change="getDropdownValues">
+
+
+                        <option value="birthday">
+                                Birth Day
+                        </option>
+                        <option value="anvc">
+                                Anniversary
+                        </option>
+                        <option value="other">
+                                Other
+                        </option>
+
+                    </select>
+
+                    <label id="other-mb-label" class="create-popup-label" style="display:none;" for="other_type_select">Other Special Day</label>
+                    <input type="text" placeholder="Other" id="other-mb" style="display:none;" t-model="state.other_type" />
+                </div>
+                <div class="footer">
+                    <div class="button confirm highlight" id="cnfm-btn" t-on-click="membership_create">
+                        Confirm
+                    </div>
+                    <div class="button cancel" t-on-click="cancel">
+                        Cancel
+                    </div>
+                </div>
+            </div>
+        </Draggable>
+    </t>
+
+    <t t-name="MembershipPopupVerify" owl="1">
+        <Draggable>
+
+            <div class="popup popup-textinput container verify-membership-popup">
+                <header class="title drag-handle">
+                    Mansam Circle Card
+                </header>
+                <div class="body">
+                    <!-- Adding text field-->
+                    <div class="container" id="fields-div">
+                        <div>
+                            <label for="card_code">Card Code</label>
+                            <input class='card_code' id="card-code-check" t-model="verify_state.code" readonly="1"/>
+                        </div>
+						
+                        <div style="display:flex;">
+                            <label class="create-popup-label" for="gifts_select">Select Gifts</label>
+                            <select id="gift-items" class="classic form-select" aria-label=".form-select-sm" t-on-change="getGiftProduct">
+
+                                <t t-foreach="gifts" t-as="gft" t-key="gft.product_id">
+                                    <option t-if = "gft.visible" t-attf-value="{{gft.product_id}}-{{gft.association_id}}">
+                                        <span t-esc="gft.name" />
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <!-- Adding button -->
+                        <!-- <div style="display:none; !important" class="button check" t-on-click="Membership_check">
+                            <label for="card_check">Check</label>
+                            <t t-esc="props.checkText"/>
+                        </div> -->
+
+                    </div>
+
+                    <!-- Adding selection field-->
+                    <br/>
+                    <br/>
+                    <t t-if="verify_state.card">
+                        <div id="verified-info-div">
+
+                            <div style="text-align:left;">
+                                <label for="card_code">
+                                    <b>Customer : </b>
+                                </label>
+                                <t t-esc="verify_state.card.customer_name"/>
+                            </div>
+                            <div style="text-align:left;">
+                                <label for="card_code">
+                                    <b>Membership Discount :</b>
+                                </label>
+                                <t t-esc="verify_state.card.membership + ' [ ' + verify_state.card.discount + '%' + ' ] '"/>
+
+                            </div>
+                            <div style="text-align:left;">
+
+                                <li>
+                                    <t t-esc="verify_state.discount_msg" />
+                                </li>
+
+                            </div>
+
+                            <div style="text-align:left;">
+                                <ul>
+                                    <t t-if="gifts.length == 0">
+                                        <li>
+                                            <t t-esc="'it seems you already consumed the discount and gifts'" />
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="msg-display-div" style="display:none;text-align:center;">
+                            <label for="total_sale">
+                                <b> Total sale (current Year) : </b>
+                            </label>
+                            <t t-esc="verify_state.card.purchase_amount"/>
+                            <br/>
+
+                            <span>Total Sale is not meeting with membership Criteria if you still wants to proceed then click ok or else cancel it.</span>
+                        </div>
+                    </t>
+                    <div class="footer" style="display:flex;">
+                        <div class="button cancel" t-on-click="confirm">
+                            <t t-esc="props.confirmText"/>
+                        </div>
+                        <div class="button cancel" t-on-click="cancel">
+                            <t t-esc="props.cancelText"/>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- <br/>
+                <br/>
+                <div class="footer">
+                   
+                </div> -->
+                <!-- </div> -->
+
+            </Draggable>
+        </t>
+
+    </templates>
