@@ -155,6 +155,8 @@ class GiftAssociation(models.Model):
             if rec.gift_ids:
                 names = rec.gift_ids[0].product_id.mapped('name')+ [" ..."]
                 rec.name = ' or '.join(names)
+            else:
+                rec.name = ''
 
 
 
