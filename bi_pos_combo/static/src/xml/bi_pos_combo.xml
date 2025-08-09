@@ -149,7 +149,7 @@
 	                        <t t-if="line.display_discount_policy == 'without_discount' and line.price != line.price_lst">
 	                            <div class="pos-receipt-left-padding">
 	                                <t t-esc="env.pos.format_currency_no_symbol(line.price_lst)" />
-	                                ->
+	                                
 	                                <t t-esc="env.pos.format_currency_no_symbol(line.price)" />
 	                            </div>
 	                        </t>

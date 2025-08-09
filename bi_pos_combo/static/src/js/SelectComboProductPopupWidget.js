@@ -229,6 +229,7 @@ odoo.define("bi_pos_combo.SelectComboProductPopupWidget", function (require) {
       });
       var add = [];
       var new_prod = [self.props.product.id, final_products];
+      console.log(new_prod)
       if (self.env.pos.final_products) {
         add.push(self.env.pos.pos_product);
         add.push(new_prod);
