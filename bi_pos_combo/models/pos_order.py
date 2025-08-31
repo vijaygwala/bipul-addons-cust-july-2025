@@ -55,6 +55,19 @@ class POSOrderLoad(models.Model):
 		result['search_params']['fields'].extend(['is_pack','pack_ids','combo_limit','optional_limit_qty'])
 		return result
 
+	def _loader_params_pos_order_line(self):
+		result = super()._loader_params_pos_order_line()
+		result['search_params']['fields'].extend([
+			'combo_prod_ids',
+			'is_pack',
+			'combo_prod_custom_ids'
+		])
+		return result
+
+	def _get_pos_ui_pos_order_line(self, params):
+		result = super()._get_pos_ui_pos_order_line(params)
+		return result
+
 
 	def _pos_ui_models_to_load(self):
 		result = super()._pos_ui_models_to_load()
@@ -75,7 +88,27 @@ class POSOrderLoad(models.Model):
 	def _get_pos_ui_product_pack(self, params):
 		return self.env['product.pack'].search_read(**params['search_params'])
 
-
+class ProductComboCustom(models.Model):
+	_name = 'product.combo.custom'
+	pos_order_line_id = fields.Many2one('pos.order.line', string="POS Order Line",ondelete='cascade')
+	product_id = fields.Many2one('product.product', string="Product")
+	qty = fields.Integer(string='Quantity')
+	display_name = fields.Char(
+		string="Product Display Name",
+		related='product_id.display_name',
+		store=True,
+		readonly=True,
+	)
+	@api.model
+	def get_combo_products_by_order_line(self, order_line_id):
+		records = self.search([('pos_order_line_id', '=', order_line_id)])
+		print('XXXXXXXXXXXXXXXXXXXX',records,order_line_id)
+		return [{
+			'id': rec.id,
+			'product_id': rec.product_id.id,
+			'product_name': rec.product_id.display_name,
+			'qty': rec.qty,
+		} for rec in records]
 
 class pos_order_line(models.Model):
 	_inherit = 'pos.order.line'
@@ -84,9 +117,51 @@ class pos_order_line(models.Model):
 	is_pack = fields.Boolean(
 		string='Pack',
 	)
+	combo_prod_custom_ids = fields.One2many('product.combo.custom', 'pos_order_line_id', string="Combo Products")
+
+
+	def _export_for_ui(self, orderline):
+		res = super()._export_for_ui(orderline)
+		records = self.env['product.combo.custom'].search([('pos_order_line_id', '=', orderline.id)])
+		res['combo_prod_custom_ids'] = [(p.id, p.display_name,p.qty) for p in records]
+		res['is_pack'] = orderline.is_pack
+		return res
 	
+	@api.model
+	def store_combo_qty(self,line_id,product_id,qty):
+
+		objs = self.env['product.combo.custom'].sudo().search([('pos_order_line_id','=',line_id)])
+		if not objs:
+			obj = self.env['product.combo.custom'].create({
+						'pos_order_line_id': line_id,
+						'product_id': product_id,
+						'qty': qty,
+					})
+			print(obj , 'obj is created KKKKKKKKKKKKKK')
+			return obj.id
+		
+		return True
+		
+		
+		
+	
+
+
 class pos_order(models.Model):
 	_inherit = 'pos.order'
+
+	# @api.model
+	# def _process_order_line(self, line, order_id):
+	# 	# This method receives 'line' (dict from POS frontend), 'order_id'
+	# 	pos_order_line = super(pos_order, self)._process_order_line(line, order_id)
+	# 	combo_products = line.get('combo_products', [])
+	# 	for combo in combo_products:
+	# 		self.env['product.combo.custom'].create({
+	# 			'pos_order_line_id': pos_order_line.id,
+	# 			'product_id': combo['id'],
+	# 			'qty': combo['combo_qty'],
+	# 		})
+	# 	return pos_order_line
 
 	def _get_order_lines(self, orders):
 		
@@ -107,6 +182,8 @@ class pos_order(models.Model):
 				order_line['combo_prod_ids'] = cstm.combo_prod_ids.ids
 			if cstm.combo_prod_ids:
 				order_line['is_pack'] = cstm.is_pack
+			if cstm.combo_prod_custom_ids:
+				order_line['combo_prod_custom_ids'] = [(p.id, p.display_name,p.qty) for p in cstm.combo_prod_custom_ids]
 
 			del order_line['id']
 			if not 'pack_lot_ids' in order_line:

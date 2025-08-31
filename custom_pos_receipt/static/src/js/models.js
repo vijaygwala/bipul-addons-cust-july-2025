@@ -1,6 +1,7 @@
 odoo.define('custom_pos_receipt.models', function (require) {
 "use strict";
 
+
     var { Order } = require('point_of_sale.models');
     var Registries = require('point_of_sale.Registries');
 

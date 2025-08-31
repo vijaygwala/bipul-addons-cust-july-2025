@@ -291,12 +291,17 @@ ITEM NAME
 						</th>
 					</tr>
 					<t t-foreach="orderlines" t-as="orderline" t-key="orderline.id">
+						<t t-log="orderline.is_pack"/>
+						<t t-log="orderline.combo_prod_custom_ids"/>
+
 
 						<t t-if="orderline.is_pack">
+
 							<tr style="margin-top:5pt">
 
 								<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top">
 									<t t-esc="env.pos.format_currency(orderline.get_display_price())"/>
+									
 								</td>
 								<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top" class="pos-right-align">
 									<t t-esc="env.pos.format_currency(orderline.get_tax().toFixed(2))"/>
@@ -328,9 +333,34 @@ ITEM NAME
 									</t>
 								</td>
 
-								</tr>
+							</tr>
+						
+							
+							<!-- <t t-if="orderline.combo_prod_custom_ids">
+								<t t-foreach="orderline.combo_prod_custom_ids" t-as="products" t-key="products.id">
+									<t t-if="products != null">
+										<tr style="margin-top:5pt">
+											<td/>
+											<td/>
+											<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top" class="pos-right-align">
+												<t t-esc="window.parseFloat(products.qty).toFixed(2)"/>
+											</td>
+											<td/>
+											<td style="text-align:right;padding-bottom:3pt;padding-top:2pt;vertical-align:top">
+												<t t-esc='products.product_name' />
+											</td>
+										</tr>
 
-								<t t-if="orderline.combo_products">
+									</t>
+								</t>
+
+
+
+
+							</t> -->
+
+
+							<t t-if="orderline.combo_products">
 
 									<t t-foreach="orderline.combo_products" t-as="products" t-key="products.id">
 										<t t-if="products != null">
@@ -351,131 +381,136 @@ ITEM NAME
 
 								</t>
 
-							</t>
-							<t t-else="">
-								<tr style="margin-top:5pt">
-									<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top">
-										<t t-esc="env.pos.format_currency(orderline.get_display_price())"/>
-									</td>
-									<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top" class="pos-right-align">
-										<t t-esc="env.pos.format_currency(orderline.get_tax().toFixed(2))"/>
-									</td>
-									<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top" class="pos-right-align">
-										<t t-esc="orderline.get_quantity_str_with_unit()"/>
-									</td>
 
-									<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top" class="pos-right-align">
-										<t t-esc="env.pos.format_currency(orderline.get_lst_price())"/>
-									</td>
-									<td style="text-align:right;padding-bottom:3pt;padding-top:2pt;vertical-align:top">
-										<t t-esc="orderline.get_product().display_name"/>
-										<t t-if="orderline.get_product().name_arabic">
-											<br/>
-											<t t-esc="orderline.get_product().name_arabic"/>
-										</t>
-										<t t-if="orderline.note">
-											<div style="width : 100%">
-												<t t-esc="orderline.note"/>
-												<i role="img" aria-label="Note" title="Note" class="fa fa-tag"></i>
-											</div>
-										</t>
-										<t t-if="orderline.get_discount() > 0">
-											<div class="pos-disc-font">
+
+						</t>
+						<t t-else="">
+							<tr style="margin-top:5pt">
+								<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top">
+										else-<t t-esc="env.pos.format_currency(orderline.get_display_price())"/>
+								</td>
+								<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top" class="pos-right-align">
+									<t t-esc="env.pos.format_currency(orderline.get_tax().toFixed(2))"/>
+								</td>
+								<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top" class="pos-right-align">
+									<t t-esc="orderline.get_quantity_str_with_unit()"/>
+								</td>
+
+								<td style="padding-bottom:3pt;padding-top:2pt;vertical-align:top" class="pos-right-align">
+									<t t-esc="env.pos.format_currency(orderline.get_lst_price())"/>
+								</td>
+								<td style="text-align:right;padding-bottom:3pt;padding-top:2pt;vertical-align:top">
+									<t t-esc="orderline.get_product().display_name"/>
+									<t t-if="orderline.get_product().name_arabic">
+										<br/>
+										<t t-esc="orderline.get_product().name_arabic"/>
+									</t>
+									<t t-if="orderline.note">
+										<div style="width : 100%">
+											<t t-esc="orderline.note"/>
+											<i role="img" aria-label="Note" title="Note" class="fa fa-tag"></i>
+										</div>
+									</t>
+									<t t-if="orderline.get_discount() > 0">
+										<div class="pos-disc-font">
 									With a<t t-esc="orderline.get_discount()"/>
 % discount
-											</div>
-										</t>
-									</td>
-									</tr>
-								</t>
-							</t>
-						</table>
-
-						<table style="border-bottom:1pt dashed black;font-size:7pt;width: 100%;" class='receipt-total'>
-							<colgroup>
-								<col width='34%'/>
-								<col width='1%'/>
-								<col width='30%'/>
-								<col width='1%'/>
-								<col width='34%'/>
-							</colgroup>
-							<tr>
-								<td style="padding-top:3pt;padding-bottom:3pt">Total Before Discount</td>
-								<td style="padding-top:3pt;padding-bottom:3pt">:</td>
-								<td style="text-align:center;padding-bottom:3pt;padding-top:3pt;padding-right:3pt">
-									<t t-esc="env.pos.format_currency(receiptEnv.order.get_total_without_tax() + receiptEnv.order.get_total_discount())"/>
+										</div>
+									</t>
 								</td>
-								<td style="padding-bottom:3pt;padding-top:3pt">:</td>
-								<td style="text-align:right;text-size:7pt;padding-top:3pt;padding-bottom:3pt;font-family:droidarabickufiregular !important;">الاجمالي قبل الخصم</td>
-							</tr>
-							<tr>
-								<td style="padding-top:3pt;padding-bottom:3pt">Total Discount Value</td>
-								<td style="padding-bottom:3pt;padding-top:3pt">:</td>
-								<td style="text-align:center;padding-bottom:3pt;padding-top:3pt;padding-right:6pt">
-									<t t-esc="env.pos.format_currency(receiptEnv.order.get_total_discount())"/>
-								</td>
-								<td style="padding-bottom:3pt;padding-top:3pt">:</td>
-								<td style="text-align:right;text-size:7pt;padding-top:3pt;padding-bottom:3pt;font-family:droidarabickufiregular !important;">اجمالي الخصم</td>
-							</tr>
-							<tr>
-								<td style="padding-top:3pt;padding-bottom:3pt">Total After Discount</td>
-								<td style="padding-bottom:3pt;padding-top:3pt">:</td>
-								<td style="text-align:center;padding-bottom:3pt;padding-top:3pt;padding-right:6pt">
-									<t t-esc="env.pos.format_currency(receiptEnv.order.get_total_without_tax())"/>
-								</td>
-								<td style="padding-bottom:3pt;padding-top:3pt">:</td>
-								<td style="text-align:right;text-size:7pt;padding-top:3pt;padding-bottom:3pt; font-family:droidarabickufiregular !important;">الاجمالي بعد الخصم</td>
 							</tr>
 
-							<t t-foreach="receipt.tax_details" t-as="taxdetail" t-key="taxdetail.id">
-								<tr>
-									<td style="padding-top:3pt;padding-bottom:3pt">
-										<t t-esc="taxdetail.name"/>
-									</td>
-									<td style="padding-bottom:3pt;padding-top:3pt">:</td>
-									<td style="text-align:center;padding-bottom:3pt;padding-top:3pt;padding-right:6pt">
-										<t t-esc="env.pos.format_currency(taxdetail.amount)"/>
-									</td>
-									<td style="padding-bottom:3pt;padding-top:3pt">:</td>
-									<td style="text-align:right;text-size:7pt;padding-top:3pt;padding-bottom:3pt; font-family:droidarabickufiregular !important;">الضرريبة</td>
-								</tr>
-							</t>
 
-							<tr style="border-bottom:1pt dashed black">
-								<td style="padding-bottom:5pt;">NET AMOUNT</td>
-								<td style="padding-bottom:5pt">:</td>
-								<td style="font-weight:bold;text-align:center;padding-bottom:5pt;padding-right:6pt">
-									<t t-esc="env.pos.format_currency(receipt.total_with_tax)"/>
-								</td>
-								<td style="padding-bottom:5pt">:</td>
-								<td style="text-align:right;padding-bottom:5pt;    font-family: droidarabickufiregular !important;">الصافي</td>
-							</tr>
 
-							<t t-foreach="paymentlines" t-as="line" t-key='line.id'>
-								<tr>
-									<td style="vertical-align:bottom">
-										<t t-esc="line.name"/>
-									</td>
-									<td style="vertical-align:bottom">:</td>
-									<td style="vertical-align:bottom;padding-right:6pt" class="pos-center-align">
-										<t t-esc="env.pos.format_currency(line.get_amount())"/>
-									</td>
-									<td style="vertical-align:bottom">:</td>
-									<td style="text-align:right;vertical-align:bottom;    font-family: droidarabickufiregular !important;">استلم</td>
-								</tr>
-							</t>
-							<tr>
-								<td style="padding-bottom:5pt">Change</td>
-								<td style="padding-bottom:5pt">:</td>
-								<td style="padding-bottom:5pt;padding-right:6pt" class="pos-center-align">
-									<t t-esc="env.pos.format_currency(receipt.change)"/>
-								</td>
-								<td style="padding-bottom:5pt">:</td>
-								<td style="padding-bottom:5pt;text-align:right;    font-family: droidarabickufiregular !important;">الباقي</td>
-							</tr>
-						</table>
-					</div>
-				</xpath>
+						</t>
+					</t>
+				</table>
 
-			</t>
-		</templates>
+				<table style="border-bottom:1pt dashed black;font-size:7pt;width: 100%;" class='receipt-total'>
+					<colgroup>
+						<col width='34%'/>
+						<col width='1%'/>
+						<col width='30%'/>
+						<col width='1%'/>
+						<col width='34%'/>
+					</colgroup>
+					<tr>
+						<td style="padding-top:3pt;padding-bottom:3pt">Total Before Discount</td>
+						<td style="padding-top:3pt;padding-bottom:3pt">:</td>
+						<td style="text-align:center;padding-bottom:3pt;padding-top:3pt;padding-right:3pt">
+							<t t-esc="env.pos.format_currency(receiptEnv.order.get_total_without_tax() + receiptEnv.order.get_total_discount())"/>
+						</td>
+						<td style="padding-bottom:3pt;padding-top:3pt">:</td>
+						<td style="text-align:right;text-size:7pt;padding-top:3pt;padding-bottom:3pt;font-family:droidarabickufiregular !important;">الاجمالي قبل الخصم</td>
+					</tr>
+					<tr>
+						<td style="padding-top:3pt;padding-bottom:3pt">Total Discount Value</td>
+						<td style="padding-bottom:3pt;padding-top:3pt">:</td>
+						<td style="text-align:center;padding-bottom:3pt;padding-top:3pt;padding-right:6pt">
+							<t t-esc="env.pos.format_currency(receiptEnv.order.get_total_discount())"/>
+						</td>
+						<td style="padding-bottom:3pt;padding-top:3pt">:</td>
+						<td style="text-align:right;text-size:7pt;padding-top:3pt;padding-bottom:3pt;font-family:droidarabickufiregular !important;">اجمالي الخصم</td>
+					</tr>
+					<tr>
+						<td style="padding-top:3pt;padding-bottom:3pt">Total After Discount</td>
+						<td style="padding-bottom:3pt;padding-top:3pt">:</td>
+						<td style="text-align:center;padding-bottom:3pt;padding-top:3pt;padding-right:6pt">
+							<t t-esc="env.pos.format_currency(receiptEnv.order.get_total_without_tax())"/>
+						</td>
+						<td style="padding-bottom:3pt;padding-top:3pt">:</td>
+						<td style="text-align:right;text-size:7pt;padding-top:3pt;padding-bottom:3pt; font-family:droidarabickufiregular !important;">الاجمالي بعد الخصم</td>
+					</tr>
+
+					<t t-foreach="receipt.tax_details" t-as="taxdetail" t-key="taxdetail.id">
+						<tr>
+							<td style="padding-top:3pt;padding-bottom:3pt">
+								<t t-esc="taxdetail.name"/>
+							</td>
+							<td style="padding-bottom:3pt;padding-top:3pt">:</td>
+							<td style="text-align:center;padding-bottom:3pt;padding-top:3pt;padding-right:6pt">
+								<t t-esc="env.pos.format_currency(taxdetail.amount)"/>
+							</td>
+							<td style="padding-bottom:3pt;padding-top:3pt">:</td>
+							<td style="text-align:right;text-size:7pt;padding-top:3pt;padding-bottom:3pt; font-family:droidarabickufiregular !important;">الضرريبة</td>
+						</tr>
+					</t>
+
+					<tr style="border-bottom:1pt dashed black">
+						<td style="padding-bottom:5pt;">NET AMOUNT</td>
+						<td style="padding-bottom:5pt">:</td>
+						<td style="font-weight:bold;text-align:center;padding-bottom:5pt;padding-right:6pt">
+							<t t-esc="env.pos.format_currency(receipt.total_with_tax)"/>
+						</td>
+						<td style="padding-bottom:5pt">:</td>
+						<td style="text-align:right;padding-bottom:5pt;    font-family: droidarabickufiregular !important;">الصافي</td>
+					</tr>
+
+					<t t-foreach="paymentlines" t-as="line" t-key='line.id'>
+						<tr>
+							<td style="vertical-align:bottom">
+								<t t-esc="line.name"/>
+							</td>
+							<td style="vertical-align:bottom">:</td>
+							<td style="vertical-align:bottom;padding-right:6pt" class="pos-center-align">
+								<t t-esc="env.pos.format_currency(line.get_amount())"/>
+							</td>
+							<td style="vertical-align:bottom">:</td>
+							<td style="text-align:right;vertical-align:bottom;    font-family: droidarabickufiregular !important;">استلم</td>
+						</tr>
+					</t>
+					<tr>
+						<td style="padding-bottom:5pt">Change</td>
+						<td style="padding-bottom:5pt">:</td>
+						<td style="padding-bottom:5pt;padding-right:6pt" class="pos-center-align">
+							<t t-esc="env.pos.format_currency(receipt.change)"/>
+						</td>
+						<td style="padding-bottom:5pt">:</td>
+						<td style="padding-bottom:5pt;text-align:right;    font-family: droidarabickufiregular !important;">الباقي</td>
+					</tr>
+				</table>
+			</div>
+		</xpath>
+
+	</t>
+</templates>
