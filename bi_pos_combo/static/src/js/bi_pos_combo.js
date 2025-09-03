@@ -185,69 +185,68 @@ odoo.define("bi_pos_combo.pos", function (require) {
 
       prepare_combo_list(list_data) {
         var combo_data = [];
-        list_data.forEach(function (prod) {
-          if (prod != null) {
-            var prd_data = {
-              active: prod.active,
-              applicablePricelistItems: prod.applicablePricelistItems,
-              attribute_line_ids: prod.attribute_line_ids,
-              available_in_pos: prod.available_in_pos,
-              barcode: prod.barcode,
-              categ: prod.categ,
-              categ_id: prod.categ_id,
-              cid: prod.cid,
-              combo_qty: prod.combo_qty,
-              combo_limit: prod.combo_limit,
-              optional_limit_qty: prod.optional_limit_qty,
-              default_code: prod.default_code,
-              description: prod.description,
-              description_sale: prod.description_sale,
-              display_name: prod.display_name,
-              id: prod.id,
-              lst_price: prod.lst_price,
-              is_pack: prod.is_pack,
-              pack_ids: prod.pack_ids,
-              standard_price: prod.standard_price,
-              taxes_id: prod.taxes_id,
-              type: prod.type,
-              image_128: prod.image_128,
-              invoice_policy: prod.invoice_policy,
-              optional_product_ids: prod.optional_product_ids,
-              parent_category_ids: prod.parent_category_ids,
-              pos_categ_id: prod.pos_categ_id,
-              product_image_url: prod.product_image_url,
-              product_tmpl_id: prod.product_tmpl_id,
-              to_weight: prod.to_weight,
-              tracking: prod.tracking,
-              uom_id: prod.uom_id,
-              __last_update: prod.__last_update,
-            };
-
-            combo_data.push(prd_data);
-          }
+        (list_data || []).forEach(function (prod) {   // safe fallback
+            if (prod != null) {
+                var prd_data = {
+                    active: prod.active,
+                    applicablePricelistItems: prod.applicablePricelistItems,
+                    attribute_line_ids: prod.attribute_line_ids,
+                    available_in_pos: prod.available_in_pos,
+                    barcode: prod.barcode,
+                    categ: prod.categ,
+                    categ_id: prod.categ_id,
+                    cid: prod.cid,
+                    combo_qty: prod.combo_qty,
+                    combo_limit: prod.combo_limit,
+                    optional_limit_qty: prod.optional_limit_qty,
+                    default_code: prod.default_code,
+                    description: prod.description,
+                    description_sale: prod.description_sale,
+                    display_name: prod.display_name,
+                    id: prod.id,
+                    lst_price: prod.lst_price,
+                    is_pack: prod.is_pack,
+                    pack_ids: prod.pack_ids,
+                    standard_price: prod.standard_price,
+                    taxes_id: prod.taxes_id,
+                    type: prod.type,
+                    image_128: prod.image_128,
+                    invoice_policy: prod.invoice_policy,
+                    optional_product_ids: prod.optional_product_ids,
+                    parent_category_ids: prod.parent_category_ids,
+                    pos_categ_id: prod.pos_categ_id,
+                    product_image_url: prod.product_image_url,
+                    product_tmpl_id: prod.product_tmpl_id,
+                    to_weight: prod.to_weight,
+                    tracking: prod.tracking,
+                    uom_id: prod.uom_id,
+                    __last_update: prod.__last_update,
+                };
+                combo_data.push(prd_data);
+            }
         });
-
         return combo_data;
-      }
+    }
 
-      set_combo_products(products) {
+
+    set_combo_products(products) {
         var ids = [];
         if (this.product.is_pack) {
-          if (products) {
-            products.forEach(function (prod) {
-              if (prod != null) {
-                ids.push(prod.id);
-              }
-            });
-          }
-          var list_data = this.prepare_combo_list(products);
-          this.combo_products = list_data;
-          this.set_combo_prod_ids(ids);
-          if (this.combo_prod_ids) {
-            this.set_combo_price(this.price);
-          }
+            if (products && products.length) {
+                products.forEach(function (prod) {
+                    if (prod != null) {
+                        ids.push(prod.id);
+                    }
+                });
+            }
+            var list_data = this.prepare_combo_list(products || []);  // ✅ safe
+            this.combo_products = list_data;
+            this.set_combo_prod_ids(ids);
+            if (this.combo_prod_ids) {
+                this.set_combo_price(this.price);
+            }
         }
-      }
+    }
       set_is_pack(is_pack) {
         this.is_pack = is_pack;
       }

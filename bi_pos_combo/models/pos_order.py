@@ -120,6 +120,18 @@ class pos_order_line(models.Model):
 	combo_prod_custom_ids = fields.One2many('product.combo.custom', 'pos_order_line_id', string="Combo Products")
 
 
+	def refund_combo_pro(self):
+		for rec in self:
+			if rec.combo_prod_ids:
+				for product in rec.combo_prod_ids:
+					stock = self.env['stock.quant'].search([('product_id','=',product.id),('location_id','=',46)],limit=1)
+					if stock:
+						stock.quantity += rec.qty
+
+
+		print("i am refund printing")
+
+
 	def _export_for_ui(self, orderline):
 		res = super()._export_for_ui(orderline)
 		records = self.env['product.combo.custom'].search([('pos_order_line_id', '=', orderline.id)])
