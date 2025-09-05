@@ -51,7 +51,7 @@ pos Pack Price Bundle pos price Bundle pos Discount Bundle Offer point of sale D
             "bi_pos_combo/static/src/js/SelectComboProductPopupWidget.js",
             "bi_pos_combo/static/src/js/OrderWidgetExtended.js",
             "bi_pos_combo/static/src/js/ProductListWidget.js",
-            "bi_pos_combo/static/src/js/TicketScreen.js",
+            # "bi_pos_combo/static/src/js/TicketScreen.js",
             'bi_pos_combo/static/src/xml/bi_pos_combo.xml',
 		],
 	},
