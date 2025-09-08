@@ -3,7 +3,7 @@
 
 {
 	"name" : "POS Combo in Odoo",
-	"version" : "16.0.0.6",
+	"version" : "16.0.0.7",
 	"category" : "Point of Sale",
 	"depends" : ['base','point_of_sale','pos_restaurant'],
 	"author": "BROWSEINFO",

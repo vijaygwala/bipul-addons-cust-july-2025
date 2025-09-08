@@ -137,8 +137,6 @@ class pos_order_line(models.Model):
 
         print("i am refund printing")
 
-    def refund_combo_pro_test(self):
-        pass
 
     def _export_for_ui(self, orderline):
         res = super()._export_for_ui(orderline)
@@ -163,7 +161,7 @@ class pos_order_line(models.Model):
         return True
 
 
-class pos_order(models.Model):
+class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     # @api.model
@@ -180,11 +178,18 @@ class pos_order(models.Model):
     # 	return pos_order_line
 
     @api.model_create_multi
-    def create(self, vals):
-        print(vals,"pos creation")
-        res = super().create(vals)
-        if vals[0]['lines'][0][2]['refunded_orderline_id']:
-            res.refund_order(arg = vals[0]['lines'][0][2]['refunded_orderline_id'])
+    def create(self, vals_list):
+        print(vals_list, "pos creation")
+        res = super().create(vals_list)
+
+        for vals in vals_list:
+            # Ensure 'lines' exist and are not empty
+            if vals.get("lines"):
+                for line in vals["lines"]:
+                    if isinstance(line, (list, tuple)) and len(line) >= 3 and isinstance(line[2], dict):
+                        refunded_id = line[2].get("refunded_orderline_id")
+                        if refunded_id:
+                            res.refund_order(arg=refunded_id)
 
         return res
 
