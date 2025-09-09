@@ -34,6 +34,7 @@ odoo.define("bi_pos_combo.SelectComboProductPopupWidget", function (require) {
                   ) {
                     var selected_product =
                       order.get_selected_orderline().combo_prod_ids;
+                      debugger;
                     var combo_products = self.env.pos.pos_product_pack;
                     for (var i = 0; i < selected_product.length; i++) {
                       if (selected_product[i] == selectedprod) {
@@ -87,6 +88,7 @@ odoo.define("bi_pos_combo.SelectComboProductPopupWidget", function (require) {
               ) {
                 var selected_product =
                   order.get_selected_orderline().combo_prod_ids;
+                  debugger;
                 var combo_products = self.env.pos.pos_product_pack;
                 for (var i = 0; i < selected_product.length; i++) {
                   if (selected_product[i] == selectedprod) {
@@ -172,7 +174,7 @@ odoo.define("bi_pos_combo.SelectComboProductPopupWidget", function (require) {
         }
       });
 
-      console.log(self.getTotalFixedValues());
+      console.log(self.getTotalFixedValues(),"total qtyyyyyy");
     }
 
     MinusQty(event) {

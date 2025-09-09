@@ -17,6 +17,7 @@ odoo.define("bi_pos_combo.TicketScreenInherit", function (require) {
 
                 if (orderlines.length === 1) {
                     const theOrderline = orderlines[0];
+                    debugger;
                     console.log("🔹 Combo product IDsssssssss:", theOrderline.combo_prod_ids);
 
                     // 👉 Extra condition: combo products

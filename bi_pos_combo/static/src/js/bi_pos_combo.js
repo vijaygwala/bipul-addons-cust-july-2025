@@ -28,7 +28,7 @@ odoo.define("bi_pos_combo.pos", function (require) {
         const comboProducts = await rpc.query({
           model: "product.combo.custom",
           method: "get_combo_products_by_order_line",
-          args: [orderLineId],
+          args: [orderLineId,this.combo_products || null],
         });
         this.combo_prod_custom_ids = comboProducts || [];
         return this.combo_prod_custom_ids;
@@ -69,6 +69,7 @@ odoo.define("bi_pos_combo.pos", function (require) {
           }
         }
         this.set_combo_products(this.combo_products);
+        debugger;
         this.combo_prod_ids = this.combo_prod_ids || [];
         this.combo_prod_custom_ids = this.combo_prod_custom_ids || [];
 
@@ -91,6 +92,7 @@ odoo.define("bi_pos_combo.pos", function (require) {
         orderline.is_pack = this.is_pack;
         orderline.price_manually_set = this.price_manually_set;
         orderline.combo_prod_ids = this.combo_prod_ids || [];
+        debugger;
         orderline.combo_prod_custom_ids = this.combo_prod_custom_ids || [];
         orderline.combo_products = this.combo_products || [];
         orderline.combo_items_with_qty = this.combo_items_with_qty || [];
@@ -98,6 +100,7 @@ odoo.define("bi_pos_combo.pos", function (require) {
       }
       init_from_JSON(json) {
         this.combo_prod_ids = json.combo_prod_ids;
+        debugger;
         if (json.combo_products) {
           this.combo_products =
             json.combo_products && JSON.parse(json.combo_products);
@@ -123,6 +126,7 @@ odoo.define("bi_pos_combo.pos", function (require) {
           this.combo_items_with_qty &&
           JSON.stringify(this.combo_items_with_qty);
         json.combo_prod_ids = this.combo_prod_ids;
+        debugger;
         json.is_pack = this.is_pack;
         json.combo_prod_custom_ids = this.get_combo_prod_custom_ids();
         return json;
@@ -131,7 +135,7 @@ odoo.define("bi_pos_combo.pos", function (require) {
         return rpc.query({
           model: "product.combo.custom",
           method: "get_combo_products_by_order_line",
-          args: [orderLineId],
+          args: [orderLineId,this.combo_products || null],
         });
       }
 
@@ -146,6 +150,7 @@ odoo.define("bi_pos_combo.pos", function (require) {
         const json = super.export_for_printing(...arguments);
         json.combo_products = this.get_combo_products();
         json.combo_prod_ids = this.combo_prod_ids;
+        debugger;
         json.is_pack = this.is_pack;
         json.combo_prod_custom_ids = this.combo_prod_custom_ids || [];
 
@@ -181,6 +186,7 @@ odoo.define("bi_pos_combo.pos", function (require) {
 
       set_combo_prod_ids(ids) {
         this.combo_prod_ids = ids;
+        debugger;
       }
 
       prepare_combo_list(list_data) {

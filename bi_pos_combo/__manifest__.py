@@ -3,9 +3,9 @@
 
 {
 	"name" : "POS Combo in Odoo",
-	"version" : "16.0.0.7",
+	"version" : "16.0.0.8",
 	"category" : "Point of Sale",
-	"depends" : ['base','point_of_sale','pos_restaurant'],
+	"depends" : ['base','point_of_sale','pos_restaurant','product'],
 	"author": "BROWSEINFO",
 	'summary': 'App used for pos several products for sale as one combined product in POS product combo pos product pack pos pack pos bundle pos pack pos combo pack point of sales combo pack pos item combo pos item pack pos combo offer pos bundle product',
 	"price":8 ,

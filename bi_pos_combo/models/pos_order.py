@@ -9,6 +9,11 @@ from odoo import SUPERUSER_ID
 from functools import partial
 from itertools import groupby
 
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    combo_qty = fields.Integer("combo qty")
+
 
 class ProductPack(models.Model):
     _name = 'product.pack'
@@ -103,15 +108,39 @@ class ProductComboCustom(models.Model):
     )
 
     @api.model
-    def get_combo_products_by_order_line(self, order_line_id):
+    def get_combo_products_by_order_line(self, order_line_id, combo_products =None):
         records = self.search([('pos_order_line_id', '=', order_line_id)])
-        print('XXXXXXXXXXXXXXXXXXXX', records, order_line_id)
-        return [{
-            'id': rec.id,
-            'product_id': rec.product_id.id,
-            'product_name': rec.product_id.display_name,
-            'qty': rec.qty,
-        } for rec in records]
+        print("XXXXXXXXXXXXXXXXXXXX %s %s %s", records, order_line_id, combo_products)
+
+
+        if combo_products:
+            for prod in combo_products:
+                tmpl_id = prod.get("product_tmpl_id")
+                if tmpl_id:
+                    tmpl_rec = self.env["product.template"].search([("id", "=", tmpl_id)], limit=1)
+                    if tmpl_rec:
+                        tmpl_rec.write({
+                            "combo_qty": prod.get("combo_qty", 0),
+                        })
+        # return [{
+        #     'id': rec.id,
+        #     'product_id': rec.product_id.id,
+        #     'product_name': rec.product_id.display_name,
+        #     'qty': rec.qty,
+        # } for rec in records]
+
+        return {
+            "orderline_products": [
+                {
+                    "id": rec.id,
+                    "product_id": rec.product_id.id,
+                    "product_name": rec.product_id.display_name,
+                    "qty": rec.qty,
+                }
+                for rec in records
+            ],
+        }
+
 
 
 class pos_order_line(models.Model):
@@ -130,13 +159,13 @@ class pos_order_line(models.Model):
                 if orderline.combo_prod_ids:
                     print("combo prod")
                     for product in orderline.combo_prod_ids:
-                        stock = self.env['stock.quant'].search([('product_id', '=', product.id), ('location_id', '=', 46)],
-                                                               limit=1)
+                        stock = self.env['stock.quant'].search(
+                            [('product_id', '=', product.id), ('location_id', '=', 46)],
+                            limit=1)
                         if stock:
                             stock.quantity += orderline.qty
 
         print("i am refund printing")
-
 
     def _export_for_ui(self, orderline):
         res = super()._export_for_ui(orderline)
@@ -241,13 +270,20 @@ class RelatedPosStock(models.Model):
     _inherit = 'stock.picking'
 
     def _prepare_stock_move_vals_for_sub_product(self, first_line, item, order_lines):
+        # get main line quantity (always absolute)
+        main_qty = abs(sum(order_lines.mapped('qty')))
+
+        # fetch combo_qty from product.template
+        combo_qty = getattr(item, "combo_qty", 1) or 1
+
         return {
             'name': first_line.name,
             'product_uom': item.uom_id.id,
             'picking_id': self.id,
             'picking_type_id': self.picking_type_id.id,
             'product_id': item.id,
-            'product_uom_qty': abs(sum(order_lines.mapped('qty')) * 1),
+            # multiply order line qty × combo qty
+            'product_uom_qty': main_qty * combo_qty,
             'state': 'draft',
             'location_id': self.location_id.id,
             'location_dest_id': self.location_dest_id.id,
