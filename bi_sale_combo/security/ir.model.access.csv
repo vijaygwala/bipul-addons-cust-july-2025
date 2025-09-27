@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_order_line_combo_wizard,sale.order.line.combo.wizard,model_sale_order_line_combo_wizard,,1,1,1,1
+access_sale_order_line_combo_wizard_req_line,sale.order.line.combo.wizard.req.line,model_sale_order_line_combo_wizard_req_line,,1,1,1,1
+access_sale_order_line_combo_wizard_opt_line,sale.order.line.combo.wizard.opt.line,model_sale_order_line_combo_wizard_opt_line,,1,1,1,1

@@ -110,7 +110,7 @@ class ProductComboCustom(models.Model):
     @api.model
     def get_combo_products_by_order_line(self, order_line_id, combo_products =None):
         records = self.search([('pos_order_line_id', '=', order_line_id)])
-        print("XXXXXXXXXXXXXXXXXXXX %s %s %s", records, order_line_id, combo_products)
+       
 
 
         if combo_products:
