@@ -15,6 +15,7 @@ class SaleOrderLine(models.Model):
         compute="_compute_show_configure_button",
         store=False
     )
+   
 
     @api.depends('product_template_id')
     def _compute_show_configure_button(self):
@@ -23,6 +24,20 @@ class SaleOrderLine(models.Model):
 
     def action_open_combo_wizard(self):
         self.ensure_one()
+        packs = self.product_template_id.pack_ids
+        req_lines = []
+        opt_lines = []
+        for p in packs:
+            # If pack.product_ids has multiple products we leave selection to user for optional;
+            if p.is_required:
+                # Choose first product if multiple exist
+                for prod in p.product_ids:
+                    req_lines.append(prod.id)
+            else:
+                # For optional, add an empty line so user can choose
+                for prod in p.product_ids:
+                    opt_lines.append( prod.id)
+
         return {
             'name': _('Configure Combo'),
             'type': 'ir.actions.act_window',
@@ -31,6 +46,8 @@ class SaleOrderLine(models.Model):
             'target': 'new',
             'context': {
                 'default_order_line_id': self.id,
+                 'domain_required_products': [('id', 'in', req_lines)],
+            'domain_optional_products': [('id', 'in', opt_lines)],
             }
         }
 
@@ -43,6 +60,8 @@ class SaleOrderLineComboWizard(models.TransientModel):
     order_line_id = fields.Many2one('sale.order.line', string='Order Line', required=True)
     required_pack_line_ids = fields.One2many('sale.order.line.combo.wizard.req.line', 'wizard_id', string='Required Products', readonly=True)
     optional_pack_line_ids = fields.One2many('sale.order.line.combo.wizard.opt.line', 'wizard_id', string='Optional Products')
+  
+
 
     def action_confirm(self):
         order = self.order_line_id.order_id
@@ -77,12 +96,13 @@ class SaleOrderLineComboWizard(models.TransientModel):
                 # If pack.product_ids has multiple products we leave selection to user for optional;
                 if p.is_required:
                     # Choose first product if multiple exist
-                    prod = p.product_ids and p.product_ids[0] or False
-                    if prod:
+                    for prod in p.product_ids:
                         req_lines.append((0, 0, {'product_id': prod.id, 'qty': 1.0}))
-                else:
-                    # For optional, add an empty line so user can choose
-                    opt_lines.append((0, 0, {'qty': 1.0}))
+                # else:
+                #     # For optional, add an empty line so user can choose
+                #     for prod in p.product_ids:
+                #         opt_lines.append((0, 0, {'product_id': prod.id, 'qty': 1.0}))
+                   
             if req_lines:
                 res['required_pack_line_ids'] = req_lines
             if opt_lines:
@@ -95,7 +115,7 @@ class SaleOrderLineComboWizardReqLine(models.TransientModel):
     _description = 'Combo Wizard Required Line'
 
     wizard_id = fields.Many2one('sale.order.line.combo.wizard', string='Wizard')
-    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True)
+    product_id = fields.Many2one('product.product', string='Product', required=True, readonly=True, domain=lambda self: self.env.context.get('domain_required_products', []))
     qty = fields.Float(string='Quantity', default=1.0)
 
 
@@ -104,5 +124,5 @@ class SaleOrderLineComboWizardOptLine(models.TransientModel):
     _description = 'Combo Wizard Optional Line'
 
     wizard_id = fields.Many2one('sale.order.line.combo.wizard', string='Wizard')
-    product_id = fields.Many2one('product.product', string='Product')
+    product_id = fields.Many2one('product.product', string='Product', domain=lambda self: self.env.context.get('domain_optional_products', []))
     qty = fields.Float(string='Quantity', default=1.0)
