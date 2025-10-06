@@ -1,4 +1,6 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
+
 
 # class ProductTemplate(models.Model):
 #     _inherit = 'product.template'
@@ -61,6 +63,23 @@ class SaleOrderLineComboWizard(models.TransientModel):
     required_pack_line_ids = fields.One2many('sale.order.line.combo.wizard.req.line', 'wizard_id', string='Required Products', readonly=True)
     optional_pack_line_ids = fields.One2many('sale.order.line.combo.wizard.opt.line', 'wizard_id', string='Optional Products')
   
+    @api.constrains('optional_pack_line_ids')
+    def _check_optional_limit_qty(self):
+        for wizard in self:
+            order_line = wizard.order_line_id
+            product_template = order_line.product_template_id
+
+            if not product_template or not product_template.optional_limit_qty:
+                continue  # No limit defined, skip validation
+
+            total_qty = sum(wizard.optional_pack_line_ids.mapped('qty'))
+            limit_qty = product_template.optional_limit_qty
+
+            if total_qty > limit_qty:
+                raise ValidationError(_(
+                    "The total optional quantity (%s) exceeds the allowed limit (%s) "
+                    "for the combos of product '%s'."
+                ) % (total_qty, limit_qty, product_template.display_name))
 
 
     def action_confirm(self):
@@ -72,6 +91,7 @@ class SaleOrderLineComboWizard(models.TransientModel):
                     'order_id': order.id,
                     'product_id': line.product_id.id,
                     'product_uom_qty': line.qty,
+                    'price_unit':line.product_id.list_price
                 })
         # Create lines for optional
         for line in self.optional_pack_line_ids:
@@ -80,6 +100,8 @@ class SaleOrderLineComboWizard(models.TransientModel):
                     'order_id': order.id,
                     'product_id': line.product_id.id,
                     'product_uom_qty': line.qty,
+                    'price_unit':line.product_id.list_price
+
                 })
         return {'type': 'ir.actions.act_window_close'}
 
