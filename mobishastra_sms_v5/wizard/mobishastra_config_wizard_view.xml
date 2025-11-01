@@ -1,0 +1,37 @@
+<odoo>
+    <record id="view_mobishastra_config_wizard" model="ir.ui.view">
+        <field name="name">mobishastra.config.wizard.form</field>
+        <field name="model">mobishastra.config.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Mobishastra Configuration">
+                <group>
+                    <group string="Credentials">
+                        <field name="api_url"/>
+                        <field name="sender_id"/>
+                        <field name="transactional_user"/>
+                        <field name="transactional_pwd" password="True"/>
+                        <field name="promotional_user"/>
+                        <field name="promotional_pwd" password="True"/>
+                    </group>
+                </group>
+                <separator string="Test Send SMS"/>
+                <group>
+                    <field name="test_mobile"/>
+                    <field name="test_message"/>
+                </group>
+                <footer>
+                    <button name="action_save_config" string="Save Configuration" type="object" class="btn-primary"/>
+                    <button name="action_test_send" string="Test Send" type="object" class="btn-secondary"/>
+                    <button string="Close" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mobishastra_config_wizard" model="ir.actions.act_window">
+        <field name="name">Mobishastra Configuration</field>
+        <field name="res_model">mobishastra.config.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

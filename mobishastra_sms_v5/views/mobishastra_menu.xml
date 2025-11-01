@@ -1,0 +1,3 @@
+<odoo>
+    <menuitem id="menu_mobishastra_config_root" name="Mobishastra Config" parent="base.menu_custom" action="action_mobishastra_config_wizard" sequence="30"/>
+</odoo>
