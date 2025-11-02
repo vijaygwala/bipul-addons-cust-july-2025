@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_mobishastra_config_wizard,mobishastra.config.wizard,model_mobishastra_config_wizard,base.group_system,1,1,1,1
 access_send_sms_wizard,send.sms.wizard,model_send_sms_wizard,base.group_user,1,1,1,1
+access_sms_log,send.sms.log,model_mobishastra_sms_log,base.group_user,1,1,1,1

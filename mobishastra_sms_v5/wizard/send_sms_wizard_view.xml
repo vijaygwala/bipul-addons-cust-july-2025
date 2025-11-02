@@ -5,7 +5,7 @@
         <field name="arch" type="xml">
             <form string="Send SMS">
                 <group>
-                    <field name="mobile"/>
+                    <field name="mobile" placeholder="Enter the Number without (+) e.g. 966512345678" />
                     <field name="message"/>
                     <field name="use_promotional"/>
                 </group>
