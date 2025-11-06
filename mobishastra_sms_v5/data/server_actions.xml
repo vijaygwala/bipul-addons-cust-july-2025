@@ -1,0 +1,21 @@
+<odoo>
+    <!-- Server Action to call bulk SMS method for Contacts -->
+    <record id="action_bulk_send_sms" model="ir.actions.server">
+        <field name="name">Send Bulk SMS Via Mobishastra</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="state">code</field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_type">action</field>
+        <field name="code">action = records.action_open_sms_wizard()</field>
+    </record>
+
+    <!-- Server Action to call bulk SMS for Leads -->
+    <record id="action_bulk_send_sms_lead" model="ir.actions.server">
+        <field name="name">Send Bulk SMS Via Mobishastra</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="state">code</field>
+        <field name="binding_model_id" ref="crm.model_crm_lead"/>
+        <field name="binding_type">action</field>
+        <field name="code">action = records.action_open_sms_wizard()</field>
+    </record>
+</odoo>

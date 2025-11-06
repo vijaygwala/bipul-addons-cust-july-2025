@@ -7,6 +7,7 @@
     'depends': ['base', 'contacts', 'crm'],
     'data': [
         'security/ir.model.access.csv',
+        'data/server_actions.xml',
         'wizard/mobishastra_config_wizard_view.xml',
         'wizard/send_sms_wizard_view.xml',
         'views/mobishastra_menu.xml',

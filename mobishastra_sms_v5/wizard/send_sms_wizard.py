@@ -1,93 +1,155 @@
-# models/send_sms_wizard.py
 import requests
+import logging
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
+
 
 class SendSMSWizard(models.TransientModel):
     _name = 'send.sms.wizard'
     _description = 'Send SMS Wizard'
 
-    mobile = fields.Char('Mobile Number', required=True)
+    mobile = fields.Char('Mobile Number(s) separated by Comma', required=True)
     message = fields.Text('Message', required=True)
     use_promotional = fields.Boolean('Use Promotional Route')
 
+    # ------------------------------------------------------------
+    # Defaults
+    # ------------------------------------------------------------
     @api.model
     def default_get(self, fields_list):
+        """Prefill comma-separated mobile numbers for selected records."""
         res = super().default_get(fields_list)
         active_model = self._context.get('active_model')
-        active_id = self._context.get('active_id')
-        if active_model and active_id:
-            record = self.env[active_model].browse(active_id)
-            if hasattr(record, 'mobile'):
-                res['mobile'] = record.mobile
-            elif hasattr(record, 'phone'):
-                res['mobile'] = record.phone
+        active_ids = self._context.get('active_ids', [])
+
+        if active_model and active_ids:
+            records = self.env[active_model].browse(active_ids)
+            mobiles = []
+
+            for record in records:
+                number = False
+                if hasattr(record, 'mobile') and record.mobile:
+                    number = record.mobile
+                elif hasattr(record, 'phone') and record.phone:
+                    number = record.phone
+
+                if number:
+                    cleaned = number.strip().replace(' ', '').replace('+', '')
+                    if cleaned not in mobiles:
+                        mobiles.append(cleaned)
+
+            if mobiles:
+                res['mobile'] = ','.join(mobiles)
+
         return res
 
-    def action_send_sms(self):
-        """Send SMS via Mobishastra API and log the attempt."""
+
+    # ------------------------------------------------------------
+    # Internal Helpers (Reusable)
+    # ------------------------------------------------------------
+    def _get_mobishastra_credentials(self):
+        """Fetch and validate Mobishastra configuration."""
         params = self.env['ir.config_parameter'].sudo()
-        api_url = params.get_param('mobishastra.api_url')
-        sender_id = params.get_param('mobishastra.sender_id')
-        transactional_user = params.get_param('mobishastra.transactional_user')
-        transactional_pwd = params.get_param('mobishastra.transactional_pwd')
-        promotional_user = params.get_param('mobishastra.promotional_user')
-        promotional_pwd = params.get_param('mobishastra.promotional_pwd')
-
-        user = promotional_user if self.use_promotional else transactional_user
-        pwd = promotional_pwd if self.use_promotional else transactional_pwd
-        route = 'Promotional' if self.use_promotional else 'Transactional'
-
-        if not api_url or not user or not pwd or not sender_id:
-            raise UserError(_('Please configure Mobishastra credentials first in Technical -> Mobishastra Config.'))
-
-        if not self.mobile:
-            raise UserError(_('Please enter a valid mobile number.'))
-
-        # Clean up mobile number
-        mobile = self.mobile.strip().replace(' ', '').replace('+', '')
-
-        payload = {
-            'user': user,
-            'pwd': pwd,
-            'senderid': sender_id,
-            'mobileno': mobile,
-            'msgText': self.message,
-            'CountryCode': 'All'
+        creds = {
+            'api_url': params.get_param('mobishastra.api_url'),
+            'sender_id': params.get_param('mobishastra.sender_id'),
+            'transactional_user': params.get_param('mobishastra.transactional_user'),
+            'transactional_pwd': params.get_param('mobishastra.transactional_pwd'),
+            'promotional_user': params.get_param('mobishastra.promotional_user'),
+            'promotional_pwd': params.get_param('mobishastra.promotional_pwd'),
         }
 
-        sms_log = self.env['mobishastra.sms.log'].sudo().create({
+        if not all([creds['api_url'], creds['sender_id'], creds['transactional_user'], creds['transactional_pwd']]):
+            raise UserError(_('Please configure Mobishastra credentials first in Technical → Mobishastra Config.'))
+        return creds
+
+    def _prepare_payload(self, mobile, message, creds, use_promotional):
+        """Prepare API payload for Mobishastra request."""
+        user = creds['promotional_user'] if use_promotional else creds['transactional_user']
+        pwd = creds['promotional_pwd'] if use_promotional else creds['transactional_pwd']
+        return {
+            'user': user,
+            'pwd': pwd,
+            'senderid': creds['sender_id'],
+            'mobileno': mobile,
+            'msgText': message,
+            'CountryCode': 'All',
+        }
+
+    def _create_sms_log(self, mobile, message, route):
+        """Create a new SMS log record."""
+        return self.env['mobishastra.sms.log'].sudo().create({
             'mobile': mobile,
-            'message': self.message,
+            'message': message,
             'route': route,
             'status': 'pending',
         })
 
+    def _send_request(self, api_url, payload):
+        """Send GET request to Mobishastra API."""
         try:
-            response = requests.get(api_url, params=payload, timeout=10)
+            return requests.get(api_url, params=payload, timeout=10)
+        except Exception as e:
+            _logger.exception("Mobishastra API request failed: %s", e)
+            raise UserError(_('Connection error while sending SMS: %s') % str(e))
+
+    # ------------------------------------------------------------
+    # Reusable Method (Can be called anywhere)
+    # ------------------------------------------------------------
+    @api.model
+    def send_sms(self, mobile, message, use_promotional=False):
+        """
+        Core reusable SMS sender.
+        Can be called from other models or wizards like:
+            self.env['send.sms.wizard'].send_sms('9876543210', 'Hello!', False)
+        """
+        creds = self._get_mobishastra_credentials()
+        route = 'Promotional' if use_promotional else 'Transactional'
+
+        # Clean and split multiple numbers
+        mobiles = [m.strip().replace(' ', '').replace('+', '') for m in mobile.split(',') if m.strip()]
+        if not mobiles:
+            raise UserError(_('Please enter at least one valid mobile number.'))
+
+        for mob in mobiles:
+            payload = self._prepare_payload(mob, message, creds, use_promotional)
+            sms_log = self._create_sms_log(mob, message, route)
+            response = self._send_request(creds['api_url'], payload)
+
             sms_log.write({
                 'response_text': response.text,
                 'status_code': response.status_code,
             })
 
-            if response.status_code != 200 or 'Error' in response.text or 'Invalid' in response.text:
+            if response.status_code != 200 or any(x in response.text for x in ['Error', 'Invalid']):
                 sms_log.status = 'failed'
-                raise UserError(_('Failed to send SMS: %s') % response.text)
+                _logger.warning("Failed to send SMS to %s: %s", mob, response.text)
+                continue  # move to next number instead of stopping the loop
 
             sms_log.status = 'success'
+            _logger.info("SMS sent successfully to %s. Response: %s", mob, response.text[:100])
+
+    # ------------------------------------------------------------
+    # Wizard Button Action
+    # ------------------------------------------------------------
+    def action_send_sms(self):
+        """Called when user clicks 'Send SMS' in the wizard UI."""
+        for wizard in self:
+            wizard.send_sms(
+                mobile=wizard.mobile,
+                message=wizard.message,
+                use_promotional=wizard.use_promotional,
+            )
 
             return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('SMS Sent'),
-                    'message': _('SMS sent successfully to %s.\nResponse: %s') % (mobile, response.text[:150]),
-                    'type': 'success',
-                    'sticky': False,
-                }
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('SMS Sent'),
+                'message': _('SMS sent successfully. Check SMS Logs for details.'),
+                'type': 'success',
+                'sticky': False,
             }
-
-        except Exception as e:
-            sms_log.status = 'failed'
-            sms_log.response_text = str(e)
-            raise UserError(_('Error while sending SMS: %s') % str(e))
+        }

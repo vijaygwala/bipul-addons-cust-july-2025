@@ -4,7 +4,7 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     def action_open_sms_wizard(self):
-        self.ensure_one()
+        #self.ensure_one()
         return {
             'name': _('Send SMS'),
             'type': 'ir.actions.act_window',
@@ -12,6 +12,6 @@ class ResPartner(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'context': {
-                'default_mobile': self.mobile or self.phone,
+                'default_mobile': ','.join(filter(None, self.mapped('mobile'))),
             }
         }

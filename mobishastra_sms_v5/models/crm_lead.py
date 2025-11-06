@@ -4,7 +4,7 @@ class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
     def action_open_sms_wizard(self):
-        self.ensure_one()
+        #self.ensure_one()
         return {
             'name': _('Send SMS'),
             'type': 'ir.actions.act_window',
@@ -12,6 +12,6 @@ class CrmLead(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'context': {
-                'default_mobile': self.phone or self.mobile,
+                'default_mobile': ','.join(filter(None, self.mapped('mobile'))),
             }
         }
