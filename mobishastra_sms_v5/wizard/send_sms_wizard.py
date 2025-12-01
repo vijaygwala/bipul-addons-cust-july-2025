@@ -55,6 +55,7 @@ class SendSMSWizard(models.TransientModel):
         creds = {
             'api_url': params.get_param('mobishastra.api_url'),
             'sender_id': params.get_param('mobishastra.sender_id'),
+            'sender_id_pramotional': params.get_param('mobishastra.sender_id_pramotional'),
             'transactional_user': params.get_param('mobishastra.transactional_user'),
             'transactional_pwd': params.get_param('mobishastra.transactional_pwd'),
             'promotional_user': params.get_param('mobishastra.promotional_user'),
@@ -72,7 +73,7 @@ class SendSMSWizard(models.TransientModel):
         return {
             'user': user,
             'pwd': pwd,
-            'senderid': creds['sender_id'],
+            'senderid': creds['sender_id'] if not use_promotional else creds['sender_id_pramotional'],
             'mobileno': mobile,
             'msgText': message,
             'CountryCode': 'All',

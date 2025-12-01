@@ -8,6 +8,7 @@
                     <group string="Credentials">
                         <field name="api_url"/>
                         <field name="sender_id"/>
+                        <field name="sender_id_pramotional"/>
                         <field name="transactional_user"/>
                         <field name="transactional_pwd" password="True"/>
                         <field name="promotional_user"/>

@@ -7,7 +7,8 @@ class MobishastraConfigWizard(models.TransientModel):
     _description = 'Mobishastra Configuration Wizard'
 
     api_url = fields.Char('API URL', default='https://saudi.mshastra.com/sendurl.aspx', required=True)
-    sender_id = fields.Char('Sender ID', required=True)
+    sender_id = fields.Char('Sender ID (Transectional)', required=True)
+    sender_id_pramotional = fields.Char('Sender ID (Pramotional)', required=True)
     transactional_user = fields.Char('Transactional User ID', required=True)
     transactional_pwd = fields.Char('Transactional Password', required=True)
     promotional_user = fields.Char('Promotional User ID')
@@ -24,6 +25,7 @@ class MobishastraConfigWizard(models.TransientModel):
         res.update({
             'api_url': params.get_param('mobishastra.api_url', 'https://saudi.mshastra.com/sendurl.aspx'),
             'sender_id': params.get_param('mobishastra.sender_id', 'MSGworld'),
+            'sender_id_pramotional': params.get_param('mobishastra.sender_id_pramotional', 'MSGworld'),
             'transactional_user': params.get_param('mobishastra.transactional_user', 'MansamTRK'),
             'transactional_pwd': params.get_param('mobishastra.transactional_pwd', '9pph_y49'),
             'promotional_user': params.get_param('mobishastra.promotional_user', 'MansamPRK'),
@@ -35,6 +37,7 @@ class MobishastraConfigWizard(models.TransientModel):
         params = self.env['ir.config_parameter'].sudo()
         params.set_param('mobishastra.api_url', self.api_url)
         params.set_param('mobishastra.sender_id', self.sender_id)
+        params.set_param('mobishastra.sender_id_pramotional', self.sender_id_pramotional)
         params.set_param('mobishastra.transactional_user', self.transactional_user)
         params.set_param('mobishastra.transactional_pwd', self.transactional_pwd)
         params.set_param('mobishastra.promotional_user', self.promotional_user)
